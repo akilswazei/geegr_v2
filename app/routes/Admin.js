@@ -5,6 +5,7 @@ vendot_router = express.Router()
 
 
 vendot_router.post('/service-category/add', service.add);
+vendot_router.post('/service-category/update', service.update);
 //vendot_router.get('/service/details', service.details);
 
 // vendot_router.get('/projects', project.index);

@@ -16,6 +16,27 @@ async function details(req,res,next){
         error:{}
     });
 }
+
+
+async function update(req,res,next){
+  try {
+         const data= req.body;
+        let saveData = {
+          display_image: data.imagefile,
+        };
+        const result = await Service.findOneAndUpdate({_id: data.cat_id},saveData);    
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    }
+    catch (err) {
+        console.log(err.message);
+        next(createError.InternalServerError());
+    }
+
+}
 async function add(req,res,next){
 
     let returnJson = { success: false };
@@ -56,4 +77,4 @@ async function add(req,res,next){
 }
 
 
-module.exports={index,details,add}
+module.exports={index,details,add,update}
