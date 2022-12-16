@@ -7,9 +7,23 @@ const Category = require("./../../../models/ServiceCategory_model");
 
 async function index(req,res,next){
 
-    const result = await Service.find({});
+    let services = await Service.find({});
+    services = await Promise.all( services.map(async function(service, index){
+
+        service = service.toObject();
+        service.category=await Category.findOne({_id: service.category })
+        service.sub_category=await Category.findOne({_id: service.sub_category })
+    
+        const jobs=await Proposal.find({service_id: service._id, status: "completed"})
+        service.jobs=jobs.length
+        service.rating = (jobs.reduce((accumulator, object) => {
+                  return accumulator + object.review_from_customer.rating;
+                }, 0))/jobs.length;
+        return service;
+    }))
+
     return res.send({
-        data: result,
+        data: services,
         status: true,
         error:{}
     });
