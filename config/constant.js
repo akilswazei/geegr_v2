@@ -1,4 +1,4 @@
 
-const domain="http://localhost"
+const domain="http://localhost:3010"
 module.exports={domain}
 

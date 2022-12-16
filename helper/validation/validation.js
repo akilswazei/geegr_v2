@@ -1,5 +1,32 @@
+
+const fs = require("fs");
+const path = require("path");
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+function replaceAll(str, find, replace) {
+  return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
+
+
 const variable = require("./variable");
 let validation = {};
+
+
+validation.validate=(req) => {
+  const validation_request_url="app/request/"+replaceAll(req.originalUrl.trim(),"/", "_")+".js"
+  //console.log(path.resolve(validation_request_url));
+  if(fs.existsSync(path.resolve(validation_request_url))){
+    const validator = require("./../../"+validation_request_url);  
+    return validator.is_valid();      
+  } else{
+    return true;
+  }
+
+}
 
 validation.validateName = (name) => {
   // const regex = /^[0-9a-zA-Z ]+$/;

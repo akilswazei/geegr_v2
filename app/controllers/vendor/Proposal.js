@@ -1,14 +1,10 @@
-const jwt=require('jsonwebtoken')
+
 const Proposal = require("./../../../models/Proposal_model");
 // const {insert_user} = require("./../../functions/core")
 
 
 async function add(req,res,next){
-    const allheaders=req.headers;
-    let returnJson = { success: false };
-    const data= req.body;
-    const decoded = await jwt.verify(allheaders['token'],'shhhhh');
-    console.log(decoded);
+
 
     try {
         let saveData = new Proposal({

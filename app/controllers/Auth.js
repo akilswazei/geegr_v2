@@ -13,7 +13,7 @@ async function index(req,res,next){
           result.password
         );
         if(isPasswordValid){
-            var token = await jwt.sign({ user: req.body.email,user_id: result._id  }, 'shhhhh');
+            var token = await jwt.sign({ user: result  }, 'shhhhh');
             
             const data={token: token}
             data.user=result;
