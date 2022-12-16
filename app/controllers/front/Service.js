@@ -2,6 +2,7 @@ const jwt=require('jsonwebtoken')
 const User = require("./../../../models/User_model");
 const Service = require("./../../../models/Service_model");
 const Proposal = require("./../../../models/Proposal_model");
+const Project = require("./../../../models/Project_model");
 const Category = require("./../../../models/ServiceCategory_model");
 // const {insert_user} = require("./../../functions/core")
 
@@ -42,6 +43,12 @@ async function details(req,res,next){
         }
         if(result._id){                
             result.jobs=await Proposal.find({service_id: result._id, status: "completed"})
+
+            result.jobs=await Promise.all( result.jobs.map(async function(job, index){
+                job=job.toObject();
+                job.project=await Project.findOne({_id: job.project})
+                return job
+            }))
             result.total_job_count=result.jobs.length
             result.recommendation = (result.jobs.filter(obj => {
                 return obj.review_from_customer.recommendation
