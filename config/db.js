@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 mongoose
-  .connect("mongodb://swazeiCentral:swazeiCentral%40123@20.127.29.222:27017/?authSource=admin&readPreference=primary&ssl=false", {
+  .connect("mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.6.1", {
     dbName: "mydb",
     useNewUrlParser: true,
     useUnifiedTopology: true,

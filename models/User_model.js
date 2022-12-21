@@ -17,7 +17,7 @@ const schema = new mongoose.Schema({
   //   required: true,
   //   maxlength: max_length.specific.zipcode,
   // },
-  profile_image: { type: String, maxlength: max_length.medium, required: true },
+  profile_image: { type: String, maxlength: max_length.medium },
   role: { type: mongoose.Schema.Types.ObjectId, ref: "roles" },
   type: { type: String, default: "user" },
   fcm_token: [{ type: String }],
