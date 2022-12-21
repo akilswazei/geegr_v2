@@ -21,7 +21,7 @@ validation.validate=(req) => {
   //console.log(path.resolve(validation_request_url));
   if(fs.existsSync(path.resolve(validation_request_url))){
     const validator = require("./../../"+validation_request_url);  
-    return validator.is_valid();      
+    return validator.is_valid(req);      
   } else{
     return true;
   }

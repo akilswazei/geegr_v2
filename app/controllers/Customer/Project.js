@@ -1,4 +1,3 @@
-const jwt=require('jsonwebtoken')
 const Project = require("./../../../models/Project_model");
 
 // const {insert_user} = require("./../../functions/core")
@@ -17,35 +16,32 @@ async function details(req,res,next){
         error:{}
     });
 }
+
+async function update(req,res,next){
+
+    try {
+        const data= req.body;
+        let saveData = {
+          title: data.title
+        };
+        const result = await Project.findOneAndUpdate({_id: data.project_id}, saveData);
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    }
+    catch (err) {
+        next({statusCode: 400, error: err.message});
+        return
+    }
+}
+
+
+
 async function add(req,res,next){
 
-    const allheaders=req.headers;
-         
-    let returnJson = { success: false };
-
-
-
-
-        const decoded = await jwt.verify(allheaders['token'],'shhhhh');
-        console.log(decoded);
-       // console.log(allheaders['token']);
-       //  next({statusCode: 401, error: decoded});
-
-    // //Permission Check
-    // const permissionResult = await checkPermission(req.user);
-    // if (permissionResult.success === false) {
-    //   returnJson.error = { message: permissionResult.message };
-    //   return res.send(returnJson);
-    // }
-
-    // //Validation Check
-    // const validationResult = await validateForm("create", req);
-    // if (validationResult.success === false) {
-    //   returnJson.error = { message: validationResult.message };
-    //   return res.send(returnJson);
-    // }
     const data= req.body;
-    console.log("vendor service");
     try {
         let saveData = new Project({
           title: data.title,
@@ -55,7 +51,7 @@ async function add(req,res,next){
           latlong: {lat: data.lat, long: data.long},
           description: data.description,
           budget: data.budget,
-          created_by: decoded.user_id
+          created_by: data.user._id
         });
         const result = await saveData.save();    
         return res.send({
@@ -70,4 +66,4 @@ async function add(req,res,next){
     }
 
 }
-module.exports={index,details,add}
+module.exports={index,details,add,update}

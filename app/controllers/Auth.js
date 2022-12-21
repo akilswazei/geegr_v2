@@ -3,7 +3,6 @@ const User = require("./../../models/User_model");
 const bcrypt = require("bcryptjs");
 // const {insert_user} = require("./../../functions/core")
 
- console.log("ddd")
 async function index(req,res,next){
     result = await User.findOne({ email: req.body.email, deleted: false });
     if(result){
@@ -30,19 +29,25 @@ async function index(req,res,next){
     }
 }
 async function signup(req,res,next){
-    let saveData = new User({
-      first_name: req.body.first_name,
-      email: req.body.email,
-      password: await bcrypt.hash(req.body.password, 10),
 
-    });
+    try{
+        let saveData = new User({
+          first_name: req.body.first_name,
+          email: req.body.email,
+          password: await bcrypt.hash(req.body.password, 10),
 
-    const result = await saveData.save();
-    return res.send({
-      data: result,
-      status: true,
-      error:{}
-    });
+        });
+
+        const result = await saveData.save();
+        return res.send({
+          data: result,
+          status: true,
+          error:{}
+        });        
+    } catch(err){
+        next({statusCode: 401, error: err.message}); 
+    }
+
 }
 
 async function validate(req,res,next) {

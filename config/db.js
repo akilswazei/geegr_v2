@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 mongoose
-  .connect("mongodb://swazeiCentral:swazeiCentral%40123@20.127.29.222:27017/?authSource=admin&readPreference=primary&ssl=false", {
+  .connect("mongodb://localhost:27017/?authSource=admin&readPreference=primary&ssl=false", {
     dbName: "mydb",
     useNewUrlParser: true,
     useUnifiedTopology: true,
