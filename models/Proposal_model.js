@@ -21,6 +21,13 @@ const schema = new mongoose.Schema({
       required: true 
     },   
   budget: { type: Number, default: 100},  
+  extra_price: [
+    {
+      price: { type: Number },
+      desc: { type: String },
+    }
+  ],
+  payment_released: { type: Number},
   review_from_customer:{
      recommendation: { type: Boolean },
      on_time: { type: Boolean },

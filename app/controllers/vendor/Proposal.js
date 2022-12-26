@@ -5,13 +5,13 @@ const Proposal = require("./../../../models/Proposal_model");
 
 async function add(req,res,next){
 
-
+    const data=req.body
     try {
         let saveData = new Proposal({
           project: data.project_id,
           service: data.service_id,
           budget: data.budget,
-          created_by: decoded.user_id,
+          created_by: data.user._id,
         });
         const result = await saveData.save();    
         return res.send({

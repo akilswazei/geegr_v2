@@ -45,8 +45,9 @@ async function add(req,res,next){
             service_charge: data.service_charge,
             skills:data.skills,
             display_image: data.display_image,
-            created_by: decoded.user_id,
-            external_url: data.extrnal_url
+            created_by: decoded.user._id,
+            external_url: data.extrnal_url,
+            location: data.location
         });
         const result = await saveData.save();    
         return res.send({
@@ -89,7 +90,8 @@ async function update(req,res,next){
             "sub_category":data.sub_category,
             "service_charge": data.service_charge,
             "skills":data.skills,
-            "display_image": data.display_image
+            "display_image": data.display_image,
+            "location": data.location
         };
         const result = await Service.findOneAndUpdate({_id: data.service_id}, saveData);    
         return res.send({

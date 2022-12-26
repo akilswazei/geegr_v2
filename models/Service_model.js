@@ -19,6 +19,7 @@ const schema = new mongoose.Schema({
     ref: "service_category",
   },
   service_charge: { type: Number, required: true },
+  location: { type: String, required: true },
   skills: [{ type: String, required: true }],
 
   verified: { type: Boolean, default: true },

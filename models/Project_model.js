@@ -25,26 +25,8 @@ const schema = new mongoose.Schema({
     lat:{type: String, required: true },
     long:{type: String, required: true }
   },
-  final_price: { type: Number },
-  extra_price: [
-    {
-      price: { type: Number },
-      desc: { type: String },
-    }
-  ],
-  final_approved_proposal: [
-    {
-      proposal: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "proposal" 
-      },
-      vendor: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "vendor" 
-      },
-
-    }
-  ],
+  final_approved_price: { type: Number },
+  total_paid: { type: Number },
   created_by: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users" 

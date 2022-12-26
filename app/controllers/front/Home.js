@@ -8,7 +8,7 @@ async function index(req,res,next){
     const data={};
     const categories=result.map(function(cat, index){
         cat=cat.toObject();
-        cat.display_image=domain+"/uploads/"+cat.display_image
+        cat.display_image=process.env.root_url+"/uploads/"+cat.display_image
         console.log(cat.display_image)
         return cat;
     });

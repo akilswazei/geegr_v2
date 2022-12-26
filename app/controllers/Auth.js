@@ -28,6 +28,28 @@ async function index(req,res,next){
         next({statusCode: 401, error: "email id or password is not correct"});
     }
 }
+
+async function changePassword(req,res,next){
+
+    let  data=req.body
+    let newpassword= Math.random() * 10;
+    try{
+        let saveData ={
+          password: await bcrypt.hash( newpassword, 10),
+        };
+        const result = await User.findOneAndUpdate({email: data.email},saveData);
+        // to send mail
+        return res.send({
+          data: result,
+          status: true,
+          error:{}
+        }); 
+    }  
+    catch(err){
+        next({statusCode: 401, error: err.message}); 
+    }
+}
+
 async function signup(req,res,next){
 
     try{

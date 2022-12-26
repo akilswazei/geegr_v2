@@ -7,6 +7,7 @@ const app = express();
 const validation = require("./helper/validation/validation")
 const fs = require("fs");
 const path = require("path");
+require('dotenv').config();
 
 app.use(express.json()); //Json body parser
 app.use(express.urlencoded({ extended: true })); //Form-data body parser

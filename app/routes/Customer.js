@@ -44,6 +44,8 @@ async function is_customer(req){
 
 customer_router.post('/project/add', Project.add);
 customer_router.post('/project/update', Project.update);
+
+customer_router.post('/proposal/release_partial_payment', Proposal.release_partial_payment);
 customer_router.post('/proposal/complete_project', Proposal.complete_project);
 customer_router.post('/proposal/accept_proposal', Proposal.accept_proposal);
 customer_router.post('/proposal', Proposal.index);
