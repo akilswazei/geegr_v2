@@ -8,6 +8,7 @@ const schema = new mongoose.Schema({
   email: { type: String, required: true, maxlength: max_length.medium, unique: true },
   password: { type: String, required: true, maxlength: max_length.medium },
   phone: { type: String,  maxlength: max_length.specific.phone },
+
   // address: { type: String, required: true, maxlength: max_length.long },
   // country: { type: String, required: true, maxlength: max_length.short },
   // state: { type: String, required: true, maxlength: max_length.short },
@@ -18,8 +19,7 @@ const schema = new mongoose.Schema({
   //   maxlength: max_length.specific.zipcode,
   // },
   profile_image: { type: String, maxlength: max_length.medium },
-  role: { type: mongoose.Schema.Types.ObjectId, ref: "roles" },
-  type: { type: String, default: "user" },
+  type: [{ type: String }],
   fcm_token: [{ type: String }],
   created_at: { type: Date, default: Date.now },
   // created_by: {

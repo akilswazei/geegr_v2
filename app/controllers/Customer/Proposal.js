@@ -9,12 +9,46 @@ const Transaction = require("./../../../models/Transaction_model");
 
 async function index(req,res,next){
     let data=req.body;
-    const result = await proposal.find({project: data.project_id});
-    return res.send({
-        data: result,
-        status: true,
-        error:{}
-    });
+
+    try{
+        const proposals = await proposal.find({project: data.project_id});
+
+        const props=await Promise.all( proposals.map(async function(propo, index){
+            propo.service=await Service.findOne({service_id: propo.service })
+            propo.project=await Project.findOne({project_id: propo.project })
+            return propo;
+        })
+        )
+     
+        return res.send({
+            data: props,
+            status: true,
+            error:{}
+        });        
+    } catch(err){
+        next({statusCode: 400, error: err.message});
+        return
+    }
+
+}
+async function details(req,res,next){
+    let data=req.body;
+    try{
+        // emit
+        // chat start for proposal for vendor
+        const proposalData = await proposal.findOne({_id: data.proposal_id});
+        proposalData.service=await Service.findOne({service_id: proposalData.service })
+        proposalData.project=await Project.findOne({project_id: proposalData.project })
+     
+        return res.send({
+            data: proposalData,
+            status: true,
+            error:{}
+        });        
+    } catch(err){
+        next({statusCode: 400, error: err.message});
+        return
+    }
 }
 async function accept_proposal(req,res,next){
 
@@ -34,7 +68,7 @@ async function accept_proposal(req,res,next){
         const service= await Service.findOne({_id: result.service}) 
 
          console.log(service);
-
+         // emit
         let tData = new Transaction({
           type: "project_payment",
           description: "Paid for project",
@@ -97,6 +131,7 @@ async function release_partial_payment(req,res,next){
         }
         const new_proposal=await proposal.findOneAndUpdate({_id: data.proposal_id}, saveData) 
 
+        // emit
         let tData = new Transaction({
           type: "release_payment",
           description: "Paid to vendor",
@@ -146,7 +181,7 @@ async function complete_project(req,res,next){
 
         const amount_to_release=project_result.total_paid-proposal_result.payment_released   
 
-
+        // emit
         let saveData = {
             status: "completed",
             completed_at: Date(),
@@ -166,6 +201,7 @@ async function complete_project(req,res,next){
           description: "Paid to vendor",
           debit:  amount_to_release,
           ref:  data.proposal_id,
+          
         });
         await tData.save();  
 

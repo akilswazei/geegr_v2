@@ -16,14 +16,13 @@ const variable = require("./variable");
 let validation = {};
 
 
-validation.validate=(req) => {
+validation.validate=(req,next) => {
   const validation_request_url="app/request/"+replaceAll(req.originalUrl.trim(),"/", "_")+".js"
-  //console.log(path.resolve(validation_request_url));
   if(fs.existsSync(path.resolve(validation_request_url))){
     const validator = require("./../../"+validation_request_url);  
-    return validator.is_valid(req);      
+    return validator.is_valid(req,next);      
   } else{
-    return true;
+    return req;
   }
 
 }

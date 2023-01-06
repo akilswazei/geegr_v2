@@ -1,30 +1,64 @@
 const Project = require("./../../../models/Project_model");
+const helper = require("./../../../helper/helper");
 
 // const {insert_user} = require("./../../functions/core")
 
 async function index(req,res,next){
+    const data=req.body
+    const result = await Project.find({created_by: data.user._id});
     return res.send({
-        data: req.body,
+        data: result,
         status: true,
         error:{}
     });
 }
+
 async function details(req,res,next){
-    return res.send({
-        data: req.body,
-        status: true,
-        error:{}
-    });
+    let data=req.body;
+    try{
+        const proposalData = await proposal.findOne({_id: data.proposal_id});
+        proposalData.service=await Service.findOne({service_id: proposalData.service })
+        proposalData.project=await Project.findOne({project_id: proposalData.project })
+     
+        return res.send({
+            data: proposalData,
+            status: true,
+            error:{}
+        });        
+    } catch(err){
+        next({statusCode: 400, error: err.message});
+        return
+    }
+}
+
+
+async function details(req,res,next){
+    const data=req.body
+    try {
+        const result = await Project.findOne({_id: data.project_id,created_by: data.user._id});
+        if(result==null){
+            throw {message: "not found"}
+        }
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    }
+    catch (err) {
+        next({statusCode: 400, error: err.message});
+        return
+    }
 }
 
 async function update(req,res,next){
+    const data= req.body;
+
+    data.latlong={lat: data.lat, long: data.long}
+    const accepted_inputs=helper.accepted_inputs(["title","description","budget","location","latlong"],data)
 
     try {
-        const data= req.body;
-        let saveData = {
-          title: data.title
-        };
-        const result = await Project.findOneAndUpdate({_id: data.project_id}, saveData);
+        const result = await Project.findOneAndUpdate({_id: data.project_id}, accepted_inputs);
         return res.send({
             data: result,
             status: true,
@@ -40,19 +74,14 @@ async function update(req,res,next){
 
 
 async function add(req,res,next){
-
     const data= req.body;
+
+    data.latlong={lat: data.lat, long: data.long}
+    const accepted_inputs=helper.accepted_inputs(["title","description","budget","location","latlong","category","sub_category"],data)
+    accepted_inputs.created_by= data.user._id
+   
     try {
-        let saveData = new Project({
-          title: data.title,
-          category: data.category,
-          sub_category: data.sub_category,
-          location: data.location,
-          latlong: {lat: data.lat, long: data.long},
-          description: data.description,
-          budget: data.budget,
-          created_by: data.user._id
-        });
+        let saveData = new Project(accepted_inputs);
         const result = await saveData.save();    
         return res.send({
             data: result,
@@ -61,8 +90,7 @@ async function add(req,res,next){
         });
     }
     catch (err) {
-        console.log(err.message);
-        next(createError.InternalServerError());
+        next({statusCode: 400, error: err.message});
     }
 
 }

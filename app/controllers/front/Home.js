@@ -9,10 +9,10 @@ async function index(req,res,next){
     const categories=result.map(function(cat, index){
         cat=cat.toObject();
         cat.display_image=process.env.root_url+"/uploads/"+cat.display_image
-        console.log(cat.display_image)
+      //  console.log(cat.display_image)
         return cat;
     });
-    console.log("jone")
+   // console.log("jone")
     data.categories=categories;
     return res.send({
         data: data,
