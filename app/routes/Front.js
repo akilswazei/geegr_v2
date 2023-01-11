@@ -7,10 +7,10 @@ front_router = express.Router()
 
 front_router.get('/', Home.index);
 
-front_router.get('/services', service.index);
+front_router.post('/services', service.index);
 front_router.post('/service/details', service.details);
 
-front_router.get('/projects', project.index);
+front_router.post('/projects', project.index);
 front_router.post('/project/details', project.details);
 
 module.exports=front_router

@@ -1,5 +1,5 @@
 const express = require("express")
-// cors = require("cors")
+ cors = require("cors")
 const http = require('http');
 const jwt= require('jsonwebtoken')
 const auth= require('./app/controllers/Auth')
@@ -8,29 +8,10 @@ const validation = require("./helper/validation/validation")
 const fs = require("fs");
 const path = require("path");
 require('dotenv').config();
-const { Server } = require("socket.io");
 
-
-
-const httpServer = http.createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.write('Hello World!');
-  res.end();
-}).listen(2000);
-io = new Server(httpServer, { cors: { origin: "*" } });
-
-  io.on("connection", async (socket) => {
-    console.log("New client connected");
-    socketInstance = socket;
-
-    // socket.on("joinUser", socket.join);
-
-    socket.on("disconnect", () => {
-      console.log("Client disconnected");
-    });
-  });
-
-
+app.use(cors({
+    origin: '*'
+}));
 
 app.use(express.json()); //Json body parser
 app.use(express.urlencoded({ extended: true })); //Form-data body parser
@@ -41,8 +22,7 @@ app.use(async function (req, res, next) {
 
     try{
 
-      console.log("test4");
-
+    
       // Website you wish to allow to connect
       res.header('Access-Control-Allow-Origin', '*');
 
@@ -50,15 +30,16 @@ app.use(async function (req, res, next) {
       res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
       // Request headers you wish to allow
-      res.header('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+      res.header('Access-Control-Allow-Headers', 'token');
 
       // Set to true if you need the website to include cookies in the requests sent
       // to the API (e.g. in case you use sessions)
       res.header('Access-Control-Allow-Credentials', true);
     
-
-
-
+      if((await validation.validate(req))==false){
+        next({statusCode: 400, error: "fields are missing"});
+        return
+      }
       next();  
     } catch(err){
       next({statusCode: 400, error: err.message});
@@ -69,9 +50,6 @@ app.use(async function (req, res, next) {
 
 });
 
-
-
-
 app.post('/auth', auth.index);
 app.post('/auth/signup', auth.signup);
 app.use(`/fileupload`,require(`./helper/fileupload.js`));
@@ -81,11 +59,12 @@ app.use(`/vendor`,require(`./app/routes/Vendor.js`));
 app.use(`/customer`,require(`./app/routes/Customer.js`));
 app.use(`/admin`,require(`./app/routes/Admin.js`));
 app.use(function(err,req,res,next){
-    res.status(err.statusCode).json({
+    console.log(err.statusCode)
+    return res.status(422).json({
       data: {},
       status: false,
       error:err.error
-    });
+    }).send();
 });
 
 
