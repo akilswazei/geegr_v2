@@ -53,6 +53,7 @@ customer_router.post('/Chat/send_files', Chat.send_files);
 customer_router.post('/Chat/send_message', Chat.message);
 
 customer_router.post('/proposal/release_partial_payment', Proposal.release_partial_payment);
+customer_router.post('/proposal/request', Proposal.proposal_request);
 customer_router.post('/proposal/complete_project', Proposal.complete_project);
 customer_router.post('/proposal/accept_proposal', Proposal.accept_proposal);
 customer_router.post('/proposal', Proposal.index);

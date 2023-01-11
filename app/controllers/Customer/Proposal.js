@@ -3,6 +3,8 @@ const proposal = require("./../../../models/Proposal_model");
 const Project = require("./../../../models/Project_model");
 const Service = require("./../../../models/Service_model");
 const Transaction = require("./../../../models/Transaction_model");
+const ProposalRequest = require("./../../../models/ProposalRequest_model");
+
 // const {insert_user} = require("./../../functions/core")
 
 
@@ -49,6 +51,31 @@ async function details(req,res,next){
         next({statusCode: 400, error: err.message});
         return
     }
+}
+
+
+
+async function proposal_request(req,res,next){
+
+    const data=req.body
+    try {
+        let saveData = new ProposalRequest({
+          project: data.project_id,
+          service: data.service_id,
+          created_by: data.user._id,
+        });
+        const result = await saveData.save();    
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    }
+    catch (err) {
+        console.log(err.message);
+        next(createError.InternalServerError());
+    }
+
 }
 async function accept_proposal(req,res,next){
 
@@ -238,4 +265,4 @@ async function complete_project(req,res,next){
     }
 
 }
-module.exports={complete_project,index,accept_proposal,release_partial_payment}
+module.exports={complete_project,index,accept_proposal,release_partial_payment,proposal_request}
