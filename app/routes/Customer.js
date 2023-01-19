@@ -38,7 +38,7 @@ async function is_customer(req){
 	if(decoded && decoded.user.type.includes('customer')!==false){
     	return decoded;	
     }	 	
-    return true
+    return decoded
 }
 
 
