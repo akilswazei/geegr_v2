@@ -73,7 +73,7 @@ async function proposal_request(req,res,next){
     }
     catch (err) {
         console.log(err.message);
-        next(createError.InternalServerError());
+        next({statusCode: 400, error: err.message});
     }
 
 }

@@ -6,6 +6,7 @@ const Home = require('./../controllers/front/Home');
 front_router = express.Router()
 
 front_router.get('/', Home.index);
+front_router.post('/category_search', Home.category_search);
 
 front_router.post('/services', service.index);
 front_router.post('/service/details', service.details);

@@ -20,4 +20,21 @@ async function index(req,res,next){
         error:{}
     });
 }
-module.exports={index}
+async function category_search(req,res,next){
+    const result = await Service.find({});
+    const data={};
+    const categories=result.map(function(cat, index){
+        cat=cat.toObject();
+        cat.display_image=process.env.root_url+"/uploads/"+cat.display_image
+      //  console.log(cat.display_image)
+        return cat;
+    });
+   // console.log("jone")
+    data.categories=categories;
+    return res.send({
+        data: data,
+        status: true,
+        error:{}
+    });
+}
+module.exports={index,category_search}
