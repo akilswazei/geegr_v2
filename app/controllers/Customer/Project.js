@@ -12,9 +12,10 @@ async function index(req,res,next){
         const result = await Promise.all( projects.map(async function(project, index){
             project = project.toObject();
             project.assigned=project.status=='active'?"Not Assigned":"";
-            if(project.assigned=='active'){
+            if(project.status=='active'){
                 project.assigned='Not Assigned'
             } else{
+                console.log(project)
                 const user = await User.findOne({_id: project.final_approved_user});
                 project.assigned=user.first_name
             }
