@@ -10,7 +10,7 @@ async function index(req,res,next){
         const projects = await Project.find({created_by: data.user._id});
         const result = await Promise.all( projects.map(async function(project, index){
             project = project.toObject();
-            project.assigned=project.status?project.status:"Not Assigned"
+            project.assigned=project.status=='active'?"Not Assigned":"";
             return project;
         })
         )

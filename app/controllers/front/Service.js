@@ -8,28 +8,38 @@ const Category = require("./../../../models/ServiceCategory_model");
 
 async function index(req,res,next){
 
-    let services = await Service.find({approval_status: "approved"});
-    services = await Promise.all( services.map(async function(service, index){
+    try{
+        let services = await Service.find({approval_status: "approved"});
+        services = await Promise.all( services.map(async function(service, index){
 
-        service = service.toObject();
+            service = service.toObject();
 
-        service.display_image=process.env.root_url+"/uploads/"+service.display_image
-        service.category=await Category.findOne({_id: service.category })
-        service.sub_category=await Category.findOne({_id: service.sub_category })
-    
-        const jobs=await Proposal.find({service_id: service._id, status: "completed"})
-        service.jobs=jobs.length
-        service.rating = (jobs.reduce((accumulator, object) => {
-                  return accumulator + object.review_from_customer.rating;
-                }, 0))/jobs.length;
-        return service;
-    }))
+            // work on search and geo location search
 
-    return res.send({
-        data: services,
-        status: true,
-        error:{}
-    });
+            service.display_image=process.env.root_url+"/uploads/"+service.display_image
+            service.category=await Category.findOne({_id: service.category })
+            service.sub_category=await Category.findOne({_id: service.sub_category })
+        
+            const jobs=await Proposal.find({service_id: service._id, status: "completed"})
+            service.jobs=jobs.length
+            service.rating = (jobs.reduce((accumulator, object) => {
+                      return accumulator + object.review_from_customer.rating;
+                    }, 0))/jobs.length;
+            service.job_success=95
+            return service;
+        }))
+
+        return res.send({
+            data: services,
+            status: true,
+            error:{}
+        });
+    }
+    catch (err) {
+        console.log(err.message);
+        next({statusCode: 400, error: err.message});
+    }
+
 }
 async function details(req,res,next){
 
