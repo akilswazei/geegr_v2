@@ -119,8 +119,8 @@ async function accept_proposal(req,res,next){
             total_paid: result.budget,
             final_approved_price: result.budget,
             final_approved_proposal: data.proposal_id,
-            final_approved_service: service._id
-            final_approved_user: service.user_id
+            final_approved_service: service._id,
+            final_approved_user: service.user_id,
             status: "assigned",
 
         }
