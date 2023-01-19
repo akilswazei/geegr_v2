@@ -1,4 +1,5 @@
 const Project = require("./../../../models/Project_model");
+const User = require("./../../../models/User_model");
 const helper = require("./../../../helper/helper");
 
 // const {insert_user} = require("./../../functions/core")
@@ -11,6 +12,12 @@ async function index(req,res,next){
         const result = await Promise.all( projects.map(async function(project, index){
             project = project.toObject();
             project.assigned=project.status=='active'?"Not Assigned":"";
+            if(project.assigned=='active'){
+                project.assigned='Not Assigned'
+            } else{
+                const user = await User.findOne({_id: project.final_approved_user});
+                project.assigned=user.first_name
+            }
             return project;
         })
         )

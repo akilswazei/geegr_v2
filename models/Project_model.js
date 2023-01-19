@@ -26,6 +26,21 @@ const schema = new mongoose.Schema({
     long:{type: String, required: true }
   },
   final_approved_price: { type: Number },
+  final_approved_proposal: {
+    type: mongoose.Schema.Types.ObjectId,
+    //required: true,
+    ref: "proposals"
+  },
+  final_approved_service: {
+    type: mongoose.Schema.Types.ObjectId,
+    //required: true,
+    ref: "services",
+  },
+  final_approved_user: {
+    type: mongoose.Schema.Types.ObjectId,
+    //required: true,
+    ref: "users"
+  },
   total_paid: { type: Number },
   created_by: {
         type: mongoose.Schema.Types.ObjectId,
