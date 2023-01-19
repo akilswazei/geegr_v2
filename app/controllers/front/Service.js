@@ -8,10 +8,12 @@ const Category = require("./../../../models/ServiceCategory_model");
 
 async function index(req,res,next){
 
-    let services = await Service.find({});
+    let services = await Service.find({approval_status: "approved"});
     services = await Promise.all( services.map(async function(service, index){
 
         service = service.toObject();
+
+        service.display_image=process.env.root_url+"/uploads/"+service.display_image
         service.category=await Category.findOne({_id: service.category })
         service.sub_category=await Category.findOne({_id: service.sub_category })
     
@@ -35,6 +37,8 @@ async function details(req,res,next){
         const data=req.body;
         const query={_id: data.service_id, approval_status: "approved"};
         let result = (await Service.findOne(query)).toObject();
+
+        result.display_image=process.env.root_url+"/uploads/"+result.display_image
         if(result.created_by){
             result.vendor=await User.findOne({_id: result.created_by})
         }  
@@ -63,6 +67,7 @@ async function details(req,res,next){
             result.rating = (result.jobs.reduce((accumulator, object) => {
                   return accumulator + object.review_from_customer.rating;
                 }, 0))/result.total_job_count;
+            result.job_success=95
         }
         return res.send({
             data: result,
@@ -72,26 +77,9 @@ async function details(req,res,next){
     } 
     catch (err) {
         console.log(err.message);
-        next(createError.InternalServerError());
+        next({statusCode: 400, error: err.message});
     }
 
 }
-async function makeoffer(req,res,next){
-    // const data= req.body;
-    // console.log("vendor service");
-    // try {
-    //     let saveData = new Project();
-    //     let saveData = new ();
-    //     const result = await saveData.save();    
-    //     return res.send({
-    //         data: result,
-    //         status: true,
-    //         error:{}
-    //     });
-    // }
-    // catch (err) {
-    //     console.log(err.message);
-    //     next(createError.InternalServerError());
-    // }
-}
+
 module.exports={index,details}

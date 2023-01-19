@@ -4,13 +4,27 @@ const helper = require("./../../../helper/helper");
 // const {insert_user} = require("./../../functions/core")
 
 async function index(req,res,next){
-    const data=req.body
-    const result = await Project.find({created_by: data.user._id});
-    return res.send({
-        data: result,
-        status: true,
-        error:{}
-    });
+
+    try{
+        const data=req.body
+        const projects = await Project.find({created_by: data.user._id});
+        const result = await Promise.all( projects.map(async function(project, index){
+            project = project.toObject();
+            project.assigned=project.status?project.status:"Not Assigned"
+            return project;
+        })
+        )
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+
+    } catch(err){
+        next({statusCode: 400, error: err.message});
+        return
+    }
+
 }
 
 async function details(req,res,next){
