@@ -18,7 +18,7 @@ async function index(req,res,next){
 
         const props=await Promise.all( proposals.map(async function(propo, index){
             propo.service=await Service.findOne({service_id: propo.service })
-            
+            propo.service.vendor=await User.findOne({_id: propo.service.created_by })
             return propo;
         })
         )
