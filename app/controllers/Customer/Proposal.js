@@ -14,7 +14,7 @@ async function index(req,res,next){
 
     try{
         const proposals = await proposal.find({project: data.project_id});
-        const project_details=await Project.findOne({project_id: data.project })
+        const project_details=await Project.findOne({project_id: data.project_id })
 
         const props=await Promise.all( proposals.map(async function(propo, index){
             propo.service=await Service.findOne({service_id: propo.service })
