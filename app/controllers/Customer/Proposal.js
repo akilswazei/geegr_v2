@@ -14,16 +14,17 @@ async function index(req,res,next){
 
     try{
         const proposals = await proposal.find({project: data.project_id});
+        const project_details=await Project.findOne({project_id: data.project })
 
         const props=await Promise.all( proposals.map(async function(propo, index){
             propo.service=await Service.findOne({service_id: propo.service })
-            propo.project=await Project.findOne({project_id: propo.project })
+            
             return propo;
         })
         )
      
         return res.send({
-            data: props,
+            data: {project: project_details,proposals: props},
             status: true,
             error:{}
         });        

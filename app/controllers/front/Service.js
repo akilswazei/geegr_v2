@@ -61,6 +61,7 @@ async function details(req,res,next){
             result.jobs=await Promise.all( result.jobs.map(async function(job, index){
                 job=job.toObject();
                 job.project=await Project.findOne({_id: job.project})
+                job.project.customer=await User.findOne({_id: job.project.created_by})
                 return job
             }))
             result.total_job_count=result.jobs.length
