@@ -2,6 +2,7 @@ const jwt=require('jsonwebtoken')
 const proposal = require("./../../../models/Proposal_model");
 const Project = require("./../../../models/Project_model");
 const Service = require("./../../../models/Service_model");
+const User = require("./../../../models/User_model");
 const Transaction = require("./../../../models/Transaction_model");
 const ProposalRequest = require("./../../../models/ProposalRequest_model");
 
