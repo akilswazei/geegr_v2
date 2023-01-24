@@ -20,6 +20,13 @@ async function index(req,res,next){
         const props=await Promise.all( proposals.map(async function(propo, index){
             propo=propo.toObject();
             propo.service=(await Service.findOne({service_id: propo.service })).toObject()
+
+            const jobs=await Proposal.find({service_id: service._id, status: "completed"})
+            const job_count=jobs.length
+            propo.service.rating = (jobs.reduce((accumulator, object) => {
+                      return accumulator + object.review_from_customer.rating;
+                    }, 0))/job_count;
+
             console.log(propo.service);
             propo.service.vendor=await User.findOne({_id: propo.service.created_by })
             return propo;
