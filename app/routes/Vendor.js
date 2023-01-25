@@ -38,7 +38,7 @@ async function is_vendor(req){
 	if(decoded && decoded.user.type=='user'){
     	return decoded;	
     }	 	
-    return true
+    return decoded
 }
 
 

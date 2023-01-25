@@ -19,7 +19,7 @@ async function index(req,res,next){
 
         const props=await Promise.all( proposals.map(async function(propo, index){
             propo=propo.toObject();
-            propo.service=(await Service.findOne({service_id: propo.service })).toObject()
+            propo.service=(await Service.findOne({_id: propo.service })).toObject()
             propo.service.display_image=process.env.root_url+"/uploads/"+propo.service.display_image
             
             const jobs=await proposal.find({service_id: propo.service._id, status: "completed"})
@@ -45,6 +45,7 @@ async function index(req,res,next){
     }
 
 }
+
 async function details(req,res,next){
     let data=req.body;
     try{
