@@ -12,7 +12,7 @@ async function index(req,res,next){
         const result = await Promise.all( projects.map(async function(project, index){
             project = project.toObject();
             project.assigned=project.status=='active'?"Not Assigned":"";
-            if(project.status=='active'){
+            if(project.assigned=='active'){
                 project.assigned='Not Assigned'
             } else{
                 console.log(project)
@@ -93,7 +93,21 @@ async function update(req,res,next){
     }
 }
 
-
+async function delete(req,res,next){
+    const data= req.body;
+    try {
+        const result = await Project.findOneAndUpdate({_id: data.project_id}, {deleted: true, deleted_by: data.user._id});
+        const result = await saveData.save();    
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    }
+    catch (err) {
+        next({statusCode: 400, error: err.message});
+    }
+}
 
 async function add(req,res,next){
     const data= req.body;

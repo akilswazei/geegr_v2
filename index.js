@@ -26,6 +26,8 @@ io = new Server(httpServer, { cors: { origin: "*" } });
     console.log("New client connected");
     socketInstance = socket;
 
+    socket.emit("63aaeda8b410b5935f451d5d", { a: "b", c: [] });
+    
     // socket.on("joinUser", socket.join);
 
     socket.on("disconnect", () => {
