@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// mongo configure
 mongoose
    .connect(process.env.db_url, {
     dbName: "mydb",
