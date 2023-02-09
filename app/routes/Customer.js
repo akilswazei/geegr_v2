@@ -48,6 +48,7 @@ async function is_customer(req){
 customer_router.post('/project/add', Project.add);
 customer_router.post('/project/update', Project.update);
 customer_router.post('/projects', Project.index);
+customer_router.post('/project/remove', Project.remove);
 customer_router.post('/project/details', Project.details);
 customer_router.post('/Chat/send_files', Chat.send_files);
 customer_router.post('/Chat/send_message', Chat.message);

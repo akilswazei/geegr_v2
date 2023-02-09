@@ -4,20 +4,27 @@ const helper = require("./../../../helper/helper");
 
 // const {insert_user} = require("./../../functions/core")
 
+function compress(string) {
+//    console.log(string)
+  return  String(string).substring(0, 5)
+}
+
+
 async function index(req,res,next){
 
     try{
         const data=req.body
-        const projects = await Project.find({created_by: data.user._id});
+        const projects = await Project.find({created_by: data.user._id,delete: false});
         const result = await Promise.all( projects.map(async function(project, index){
             project = project.toObject();
+            project.short_id=compress(project._id);
             project.assigned=project.status=='active'?"Not Assigned":"";
-            if(project.assigned=='active'){
+            if(project.status=='active'){
                 project.assigned='Not Assigned'
             } else{
                 console.log(project)
                 const user = await User.findOne({_id: project.final_approved_user});
-                project.assigned=user.first_name
+                project.assigned=user?user.first_name:""
             }
             return project;
         })
@@ -93,11 +100,10 @@ async function update(req,res,next){
     }
 }
 
-async function delete(req,res,next){
+async function remove(req,res,next){
     const data= req.body;
     try {
         const result = await Project.findOneAndUpdate({_id: data.project_id}, {deleted: true, deleted_by: data.user._id});
-        const result = await saveData.save();    
         return res.send({
             data: result,
             status: true,
@@ -130,4 +136,4 @@ async function add(req,res,next){
     }
 
 }
-module.exports={index,details,add,update}
+module.exports={index,details,add,update,remove}
