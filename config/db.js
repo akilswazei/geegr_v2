@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 mongoose
-   .connect("mongodb+srv://geegr_v2:admin123@cluster0.d24pm.gcp.mongodb.net/?retryWrites=true&w=majority", {
+   .connect(process.env.root_url, {
     dbName: "mydb",
     useNewUrlParser: true,
   })
