@@ -46,6 +46,11 @@ async function is_vendor(req){
 
 vendot_router.post('/service/add', service.add);
 vendot_router.post('/service/update', service.update);
+
+vendot_router.post('/Chat/send_files', Chat.send_files);
+vendot_router.post('/Chat/send_message', Chat.message);
+vendot_router.post('/Chat/messagelist', Chat.messagelist);
+
 vendot_router.post('/proposal/add', proposal.add);
 vendot_router.post('/proposal/add_review', proposal.add_review);
 
