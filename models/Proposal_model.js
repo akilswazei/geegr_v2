@@ -20,7 +20,8 @@ const schema = new mongoose.Schema({
       ref: "users",
       required: true 
     },   
-  budget: { type: Number, default: 100},  
+  budget: { type: Number, default: 100}, 
+  description: { type: String},  
   extra_price: [
     {
       price: { type: Number },

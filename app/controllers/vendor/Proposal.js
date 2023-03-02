@@ -1,4 +1,4 @@
-
+const {send_message} = require("./../../../helper/helper");
 const Proposal = require("./../../../models/Proposal_model");
 // const {insert_user} = require("./../../functions/core")
 
@@ -14,6 +14,29 @@ async function add(req,res,next){
           created_by: data.user._id,
         });
         const result = await saveData.save();    
+        await send_message(data.proposal_id,"proposal_request","vendor",data.message,result)
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    }
+    catch (err) {
+        console.log(err.message);
+        next({statusCode: 400, error: err.message});
+    }
+
+}
+async function update(req,res,next){
+
+    const data=req.body
+    try {
+        let saveData =  {
+          budget: data.budget,
+          description: data.description
+        };
+        const result = await Proposal.findOneAndUpdate({_id: data.proposal_id},saveData,{new: true});    
+        await send_message(data.proposal_id,"proposal_update","vendor","proposal update message",result)
         return res.send({
             data: result,
             status: true,
@@ -56,4 +79,4 @@ async function add_review(req,res,next){
     }
 
 }
-module.exports={add,add_review}
+module.exports={add,add_review,update}

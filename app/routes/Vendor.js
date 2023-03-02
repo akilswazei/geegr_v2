@@ -1,6 +1,7 @@
 const express = require("express")
 const jwt=require('jsonwebtoken')
 const service = require('./../controllers/vendor/Service');
+const Chat = require('./../controllers/vendor/Chat');
 const proposal = require('./../controllers/vendor/Proposal');
 const project = require('./../controllers/front/Project');
 const Home = require('./../controllers/front/Home');
@@ -52,6 +53,7 @@ vendot_router.post('/Chat/send_message', Chat.message);
 vendot_router.post('/Chat/messagelist', Chat.messagelist);
 
 vendot_router.post('/proposal/add', proposal.add);
+vendot_router.post('/proposal/update', proposal.update);
 vendot_router.post('/proposal/add_review', proposal.add_review);
 
 //vendot_router.get('/service/details', service.details);
