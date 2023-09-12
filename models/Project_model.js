@@ -21,6 +21,18 @@ const schema = new mongoose.Schema({
   },
   budget: { type: Number},
   location: { type: String, required: true },
+
+
+  street_name: { type: String, required: true },
+  unit: { type: String, required: true },
+  city: { type: String, required: true },
+  state: { type: String, required: true },
+  zipcode: { type: String, required: true },
+  max_radius: { type: Number, required: true },
+  is_shareable: { type: Boolean, required: true },
+  is_immediate: { type: Boolean, required: true },
+  images: [{ type: String}],
+
   latlong: { 
     lat:{type: String, required: true },
     long:{type: String, required: true }
@@ -53,9 +65,18 @@ const schema = new mongoose.Schema({
   //   enum: ["vendors"], //Possible model names like vendors for populate
   // },
   updated_at: { type: Date },
+  
   deleted_at: { type: Date },
   deleted: { type: Boolean, default: false },
+  
+  assigned: { type: Boolean, default: false },
+  assigned_at: { type: Date },
+
   status: { type: String, default: "active" }, //active, inactive
+
+  // inactive : if expired, if done
+  // active: assigned and not assigned
+
 });
 
 module.exports = mongoose.model("projects", schema, "projects");

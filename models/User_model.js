@@ -8,17 +8,57 @@ const schema = new mongoose.Schema({
   email: { type: String, required: true, maxlength: max_length.medium, unique: true },
   password: { type: String, required: true, maxlength: max_length.medium },
   phone: { type: String,  maxlength: max_length.specific.phone },
+  description: { type: String },
+  contact_no: { type: String },
+  vendor_description: { type: String },
+  vendor_contact_no: { type: String },
 
-  // address: { type: String, required: true, maxlength: max_length.long },
-  // country: { type: String, required: true, maxlength: max_length.short },
-  // state: { type: String, required: true, maxlength: max_length.short },
-  // city: { type: String, required: true, maxlength: max_length.short },
-  // zipcode: {
-  //   type: String,
-  //   required: true,
-  //   maxlength: max_length.specific.zipcode,
-  // },
-  profile_image: { type: String, maxlength: max_length.medium },
+  payment_methods: 
+    [
+      {
+        payment_id:{type:String},
+        type:{type:String},
+        card_last_digits: {type:String},
+        exp_month: {type:String},
+        exp_year: {type:String}
+      }
+    ],
+  address:
+  [
+    {
+      nick_name: { type: String, maxlength: max_length.long },
+      address: { type: String, maxlength: max_length.long },
+      appartment: { type: String, maxlength: max_length.long },
+      country: { type: String, maxlength: max_length.short },
+      state: { type: String,  maxlength: max_length.short },
+      city: { type: String,  maxlength: max_length.short },
+      zipcode: { type: String,  maxlength: max_length.short },
+      default: { type: Boolean, default: false },
+    }
+  ],
+  vendor_address:
+  [
+    {
+      nick_name: { type: String, maxlength: max_length.long },
+      address: { type: String, maxlength: max_length.long },
+      appartment: { type: String, maxlength: max_length.long },
+      country: { type: String, maxlength: max_length.short },
+      state: { type: String,  maxlength: max_length.short },
+      city: { type: String,  maxlength: max_length.short },
+      zipcode: { type: String,  maxlength: max_length.short },
+      default: { type: Boolean, default: false },
+    }
+  ],
+
+  settings:
+  [
+    {
+      key: { type: String, maxlength: max_length.short },
+      description: { type: String, maxlength: max_length.long },
+      value: { type: String, maxlength: max_length.long },
+    }
+  ],
+  profile_image: [{ type: String, maxlength: max_length.medium }],
   type: [{ type: String }],
   fcm_token: [{ type: String }],
   created_at: { type: Date, default: Date.now },

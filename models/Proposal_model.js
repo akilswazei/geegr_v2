@@ -20,8 +20,32 @@ const schema = new mongoose.Schema({
       ref: "users",
       required: true 
     },   
-  budget: { type: Number, default: 100}, 
+  budget: { type: Number, default: 100},
+  min_budget: { type: Number}, 
   description: { type: String},  
+  line_items:[
+      {
+        title: { type: String,default:""},
+        description: { type: String,default:""},
+        budget: { type: Number,default:0},
+        status:  { type: String,default:""},  // acceted, started, completed, not completed,    
+        created_at: { type: Date, default: Date.now },
+        accepted_at:{ type: Date },
+        time: {type: "string", default:"before"}
+      }
+    ],
+
+   todo:[
+      {
+        title: { type: String,default:""},
+        description: { type: String,default:""},
+        budget: { type: Number,default:0},
+        status:  { type: String,default:""},  // acceted, started, completed, not completed,    
+        created_at: { type: Date, default: Date.now },
+        started_at:{ type: Date },
+        completed_at:{ type: Date }
+      }
+    ], 
   extra_price: [
     {
       price: { type: Number },
@@ -44,6 +68,7 @@ const schema = new mongoose.Schema({
      comment: { type: String },    
   },   
   accepted_at:{ type: Date },
+  started_at:{ type: Date },
   completed_at:{ type: Date }, 
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date },

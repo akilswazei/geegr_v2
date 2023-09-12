@@ -7,11 +7,13 @@ const project = require('./../controllers/front/Project');
 const Home = require('./../controllers/front/Home');
 const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
+const Profile = require('./../controllers/vendor/Profile');
+const dashboard = require("./../controllers/vendor/Dashboard")
 
-vendot_router = express.Router()
+vendor_router = express.Router()
 
 
-vendot_router.use('/',async function (req, res, next) {
+vendor_router.use('/',async function (req, res, next) {
 	try{
 		if(data=await is_vendor(req)){
 			req.body.user=data.user
@@ -31,6 +33,7 @@ vendot_router.use('/',async function (req, res, next) {
 
 
 async function is_vendor(req){
+
 	const allheaders=req.headers;
 	let returnJson = { success: false };
     const data= req.body;
@@ -42,23 +45,44 @@ async function is_vendor(req){
     return decoded
 }
 
+vendor_router.post('/dashboard', dashboard.index);
+vendor_router.post('/transaction', dashboard.transaction);
+vendor_router.post('/profile', Profile.index);
+vendor_router.post('/profile/update', Profile.update);
+
+vendor_router.post('/profile/address/add', Profile.add_address);
+vendor_router.post('/profile/address/update', Profile.update_address);
+vendor_router.post('/profile/address/delete', Profile.delete_address);
+vendor_router.post('/profile/address', Profile.address_index);
+vendor_router.post('/profile/address/detail', Profile.address_detail);
+
+vendor_router.post('/profile/settings', Profile.settings);
+vendor_router.post('/profile/settings/update', Profile.update_settings);
 
 
 
-vendot_router.post('/service/add', service.add);
-vendot_router.post('/service/update', service.update);
+vendor_router.post('/services', service.index);
+vendor_router.post('/service/detail', service.detail);
+vendor_router.post('/service/add', service.add);
+vendor_router.post('/service/update', service.update);
+vendor_router.post('/service/delete', service.remove);
 
-vendot_router.post('/Chat/send_files', Chat.send_files);
-vendot_router.post('/Chat/send_message', Chat.message);
-vendot_router.post('/Chat/messagelist', Chat.messagelist);
+vendor_router.post('/Chat/send_files', Chat.send_files);
+vendor_router.post('/Chat/send_message', Chat.message);
+vendor_router.post('/Chat/messagelist', Chat.messagelist);
 
-vendot_router.post('/proposal/add', proposal.add);
-vendot_router.post('/proposal/update', proposal.update);
-vendot_router.post('/proposal/add_review', proposal.add_review);
+vendor_router.post('/proposals', proposal.index);
 
-//vendot_router.get('/service/details', service.details);
+vendor_router.post('/proposal/add', proposal.add);
+//vendor_router.post('/proposal/update', proposal.update);
+vendor_router.post('/proposal/add_review', proposal.add_review);
+vendor_router.post('/proposal/add_new_line_items', proposal.add_new_line_items);
+vendor_router.post('/proposal/change_line_item_status', proposal.change_line_item_status);
+vendor_router.post('/proposal/raise_dispute', proposal.raise_dispute);
 
-// vendot_router.get('/projects', project.index);
-// vendot_router.get('/project/details', project.details);
+//vendor_router.get('/service/details', service.details);
 
-module.exports=vendot_router
+// vendor_router.get('/projects', project.index);
+// vendor_router.get('/project/details', project.details);
+
+module.exports=vendor_router

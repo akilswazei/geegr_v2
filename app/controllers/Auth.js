@@ -31,6 +31,8 @@ async function index(req,res,next){
     }
 }
 
+
+
 async function changePassword(req,res,next){
 
     let  data=req.body

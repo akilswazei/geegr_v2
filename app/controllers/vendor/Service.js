@@ -3,18 +3,49 @@ const Service = require("./../../../models/Service_model");
 // const {insert_user} = require("./../../functions/core")
 
 async function index(req,res,next){
-    return res.send({
-        data: req.body,
-        status: true,
-        error:{}
-    });
+    let data=req.body;
+
+    try{
+        const result = await Service.find({created_by: data.user._id,deleted:false});
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    } catch(err){
+        next({statusCode: 400, error: err.message});
+        return
+    }
 }
-async function details(req,res,next){
-    return res.send({
-        data: req.body,
-        status: true,
-        error:{}
-    });
+
+async function remove(req,res,next){
+    let data=req.body;
+
+    try{
+        const result = await Service.findOneAndUpdate({_id: data.service_id,deleted:false},{deleted:true},{new: true});
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    } catch(err){
+        next({statusCode: 400, error: err.message});
+        return
+    }
+}
+async function detail(req,res,next){
+    let data=req.body;
+     try{
+        const result = await Service.findOne({_id:data.service_id,created_by: data.user._id,deleted:false});
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    } catch(err){
+        next({statusCode: 400, error: err.message});
+        return
+    }
 }
 async function add(req,res,next){
 
@@ -57,8 +88,8 @@ async function add(req,res,next){
         });
     }
     catch (err) {
-        console.log(err.message);
-        next(createError.InternalServerError());
+        next({statusCode: 400, error: err.message});
+        return
     }
 
 }
@@ -107,4 +138,4 @@ async function update(req,res,next){
 
 }
 
-module.exports={index,details,add,update}
+module.exports={index,add,update,remove,detail}

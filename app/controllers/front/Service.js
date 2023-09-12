@@ -45,7 +45,8 @@ async function details(req,res,next){
 
     try{
         const data=req.body;
-        const query={_id: data.service_id, approval_status: "approved"};
+        // , approval_status: "approved"
+        const query={_id: data.service_id};
         let result = (await Service.findOne(query)).toObject();
 
         result.display_image=process.env.root_url+"/uploads/"+result.display_image
@@ -56,29 +57,46 @@ async function details(req,res,next){
             result.category=await Category.findOne({_id: result.category})
         }
         if(result._id){                
-            result.jobs=await Proposal.find({service_id: result._id, status: "completed"})
+            result.job=[];
+            result.total_job_count=0;
+            result.recommendation=0;
+            result.on_time=0;
+            result.on_budget=10;
+            result.rating=1;
 
-            result.jobs=await Promise.all( result.jobs.map(async function(job, index){
-                job=job.toObject();
-                job.project=await Project.findOne({_id: job.project})
-                job.project.customer=await User.findOne({_id: job.project.created_by})
-                return job
-            }))
-            result.total_job_count=result.jobs.length
-            result.recommendation = (result.jobs.filter(obj => {
-                return obj.review_from_customer.recommendation
-            }).length)*100/result.total_job_count;
-            result.on_time = (result.jobs.filter(obj => {
-                return obj.review_from_customer.on_time
-            }).length)*100/result.total_job_count;
-            result.on_budget = (result.jobs.filter(obj => {
-                return obj.review_from_customer.on_budget
-            }).length)*100/result.total_job_count;
 
-            result.rating = (result.jobs.reduce((accumulator, object) => {
-                  return accumulator + object.review_from_customer.rating;
-                }, 0))/result.total_job_count;
-            result.job_success=95
+            result.jobs=await Proposal.find({service: result._id, status: "completed"})
+ 
+
+            if(result.jobs && result.jobs.length!=0){
+
+                result.jobs=await Promise.all( result.jobs.map(async function(job, index){
+                    job=job.toObject();
+                    job.project=await Project.findOne({_id: job.project})
+                    job.project.customer=await User.findOne({_id: job.project.created_by})
+                    return job
+                }))
+
+                result.total_job_count=result.jobs.length
+                
+                result.recommendation = (result.jobs.filter(obj => {
+                    return obj.review_from_customer.recommendation
+                }).length)*100/result.total_job_count;
+
+                result.on_time = (result.jobs.filter(obj => {
+                    return obj.review_from_customer.on_time
+                }).length)*100/result.total_job_count;
+                
+                result.on_budget = (result.jobs.filter(obj => {
+                    return obj.review_from_customer.on_budget
+                }).length)*100/result.total_job_count;
+
+                result.rating = (result.jobs.reduce((accumulator, object) => {
+                      return accumulator + object.review_from_customer.rating;
+                    }, 0))/result.total_job_count;
+                result.job_success=95                
+            }
+
         }
         return res.send({
             data: result,
@@ -88,7 +106,7 @@ async function details(req,res,next){
     } 
     catch (err) {
         console.log(err.message);
-        next({statusCode: 400, error: err.message});
+        next({statusCode: 400, error: err.stack});
     }
 
 }

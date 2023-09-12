@@ -6,6 +6,10 @@ const auth= require('./app/controllers/Auth')
 const app = express();
 const validation = require("./helper/validation/validation")
 const fs = require("fs");
+const fileUpload = require('express-fileupload');
+
+app.use(fileUpload({ safeFileNames: true, preserveExtension: true }))
+
 const path = require("path");
 require('dotenv').config();
 const { Server } = require("socket.io");
@@ -26,8 +30,6 @@ io = new Server(httpServer, { cors: { origin: "*" } });
     console.log("New client connected");
     socketInstance = socket;
 
-    socket.emit("63aaeda8b410b5935f451d5d", { a: "b", c: [] });
-    
     // socket.on("joinUser", socket.join);
 
     socket.on("disconnect", () => {
@@ -38,7 +40,7 @@ io = new Server(httpServer, { cors: { origin: "*" } });
 
 
 app.use(express.json()); //Json body parser
-app.use(express.urlencoded({ extended: true })); //Form-data body parser
+//app.use(express.urlencoded({ extended: true })); //Form-data body parser
 
 app.use('/uploads',express.static(path.join(__dirname, 'uploads')))
 
@@ -79,7 +81,7 @@ app.use(async function (req, res, next) {
 
 app.post('/auth', auth.index);
 app.post('/auth/signup', auth.signup);
-app.use(`/fileupload`,require(`./helper/fileupload.js`));
+//app.use(`/fileupload`,require(`./helper/fileupload.js`));
 
 app.use(`/front`,require(`./app/routes/Front.js`));
 app.use(`/vendor`,require(`./app/routes/Vendor.js`));

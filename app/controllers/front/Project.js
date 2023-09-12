@@ -18,7 +18,11 @@ async function details(req,res,next){
     const query={};
     query._id = req.body._id;
     const result = (await Project.findOne(query)).toObject();
-    const projects = await Project.find({created_by: result.created_by});
+
+    const projectproposal = await Proposal.findOne({project_id: result.project_id});
+     if(projectproposal){
+        result.projectproposal=  projectproposal 
+     }
      if(result.category){
             result.category=await Category.findOne({_id: result.category})
         }
@@ -28,6 +32,9 @@ async function details(req,res,next){
      if(result.sub_category){
         result.sub_category=await Category.findOne({_id: result.sub_category})
     }
+
+    const projects = await Project.find({created_by: result.created_by});
+
   //  console.log(projects)
     let allproposals=[]
     await Promise.all( projects.map(async function(project, index){
