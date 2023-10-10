@@ -39,10 +39,22 @@ io = new Server(httpServer, { cors: { origin: "*" } });
 
 
 
-app.use(express.json()); //Json body parser
 //app.use(express.urlencoded({ extended: true })); //Form-data body parser
-
+app.use(express.json()); //Json body parser
 app.use('/uploads',express.static(path.join(__dirname, 'uploads')))
+
+
+  
+// To handle the download file request
+app.get("/download", function (req, res) {
+  
+  // The res.download() talking file path to be downloaded
+  res.download(__dirname + "/download_gfg.txt", function (err) {
+    if (err) {
+      console.log(err);
+    }
+  });
+});
 
 app.use(async function (req, res, next) {
 

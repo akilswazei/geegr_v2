@@ -77,6 +77,8 @@ vendor_router.post('/proposal/add', proposal.add);
 //vendor_router.post('/proposal/update', proposal.update);
 vendor_router.post('/proposal/add_review', proposal.add_review);
 vendor_router.post('/proposal/add_new_line_items', proposal.add_new_line_items);
+vendor_router.post('/proposal/accept_proposal', proposal.accept_proposal);
+
 vendor_router.post('/proposal/change_line_item_status', proposal.change_line_item_status);
 vendor_router.post('/proposal/raise_dispute', proposal.raise_dispute);
 

@@ -7,6 +7,7 @@ const Dispute = require("./../../../models/Dispute_model");
 const Transaction = require("./../../../models/Transaction_model");
 const ProposalRequest = require("./../../../models/ProposalRequest_model");
 const Chat=require("./../../../models/Chat_model");
+const {fileupload,customupload}= require("./../../../helper/fileupload");
 
 async function messagelist(req,res,next){
     let data=req.body;
@@ -92,9 +93,29 @@ async function  send_files(req,res,next){
 
   try {
         const data=req.body
-        const result=await send_message(data.proposal_id,"file","customer",data.message,{file: data.file, file_type: data.file_type})
+
+        let letimageresult=[];
+            
+        if(req?.files?.file){
+
+            if(Array.isArray(req.files.file)){
+                await Promise.all( req.files.file.map(async (value,key)=>{
+                    console.log(value,key)
+                    req.files.uploadFile=req.files.file[key];
+                    letimageresult[key]=await customupload(req.files)
+                }))
+            } else{
+                req.files.uploadFile=req.files.file;
+                letimageresult[0]=await customupload(req.files)
+            }
+            console.log(letimageresult,'letimageresult')
+           
+        }
+
+        const result=await send_message(data.proposal_id,"file","customer",data.message,{file: letimageresult, file_type: data.file_type})
     	console.log(result)
         
+
         if(result.status===false) throw(result.message)
  
     	return res.send({

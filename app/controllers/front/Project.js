@@ -3,7 +3,7 @@ const Project = require("./../../../models/Project_model");
 const User = require("./../../../models/User_model");
 const Proposal = require("./../../../models/Proposal_model");
 const Category = require("./../../../models/ServiceCategory_model");
-
+const {fileupload}= require("./../../../helper/fileupload");
 // const {insert_user} = require("./../../functions/core")
 
 async function index(req,res,next){

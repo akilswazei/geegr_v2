@@ -20,6 +20,7 @@ const schema = new mongoose.Schema({
       ref: "users",
       required: true 
     },   
+  images: [{ type: mongoose.Schema.Types.ObjectId, ref: "media"}],  
   budget: { type: Number, default: 100},
   min_budget: { type: Number}, 
   description: { type: String},  

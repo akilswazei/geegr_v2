@@ -1,6 +1,7 @@
-const {send_message,accepted_inputs} = require("./../../../helper/helper");
+const {send_message,accepted_inputs,update_message} = require("./../../../helper/helper");
 const Proposal = require("./../../../models/Proposal_model");
 const Dispute = require("./../../../models/Dispute_model");
+const {fileupload,customupload}= require("./../../../helper/fileupload");
 
 // const {insert_user} = require("./../../functions/core")
 
@@ -29,13 +30,33 @@ async function add(req,res,next){
     const data=req.body
     try {
 
+        let letimageresult=[];
+            
+        if(req?.files?.images){
+
+            if(Array.isArray(req.files.images)){
+                await Promise.all( req.files.images.map(async (value,key)=>{
+                    console.log(value,key)
+                    req.files.uploadFile=req.files.images[key];
+                    letimageresult[key]=await customupload(req.files)
+                }))
+            } else{
+                req.files.uploadFile=req.files.images;
+                letimageresult[0]=await customupload(req.files)
+            }
+            console.log(letimageresult,'letimageresult')
+           
+        }
+        console.log(data,'lineitems')
+
         let saveData = new Proposal({
           project: data.project_id,
           service: data.service_id,
           budget: data.budget,
           description: data.description,
           created_by: data.user._id,
-          line_items: data.line_items,
+          line_items: JSON.parse(data.line_items),
+          images: letimageresult
         });
         let result = await saveData.save();
         
@@ -113,8 +134,6 @@ async function change_line_item_status(req,res,next){
     }
 }
 async function add_new_line_items(req,res,next){
-
-
 
     const data=req.body
     try {
@@ -198,4 +217,139 @@ async function raise_dispute(req,res,next){
         return
     }
 }
-module.exports={add,add_review,update,add_new_line_items,change_line_item_status,index,raise_dispute}
+
+async function pay(req,res,next){
+    const data=req.body
+    try {
+
+        let  amount = await proposal.findOne({_id: data.proposal_id}).then((doc) =>{
+            let amount=0;
+            doc.line_items.map((value) =>{
+                if(value.status==''){
+                    amount+=value.budget
+                } 
+            })
+            amount=amount+0.2*amount;
+            return amount
+
+        });
+        let tdata;      
+        switch(data.reqest_for){
+            case 'accept_project':
+                tData = new Transaction({
+                  type: "project_deposit",
+                  description: "Add Amount for proposal",
+                  transacton_type:  'credit',
+                  ref:  data.proposal_id,
+                  transaction_in:  'proposal',
+                  user_id: data.user._id,
+                  amount: amount
+                });
+            break;
+            case 'add_line_items':
+                tData = new Transaction({
+                  type: "new_line_item_deposit",
+                  description: "Add Amount for new line items",
+                  transacton_type:  'credit',
+                  transaction_in:  'proposal',
+                  ref:  data.proposal_id,
+                  user_id: data.user._id,
+                  amount: amount
+                });
+            break;
+            default:
+            break;
+        }
+        await tData.save();  
+
+        await stripe.charges.create({
+            amount: amount*100, // amount in cents, again
+            currency: "usd",
+            source: data.payment_method,
+            description: "payinguser@example.com",
+            customer: "cus_NA3KWTXeJgslum"
+        })
+       
+        return res.send({
+            data: data,
+            status: true,
+            error:{}
+        });
+     
+    } catch (err) {
+        console.log(err.message);
+         next({statusCode: 400, error: err.message});
+    }
+}
+
+async function accept_proposal(req,res,next){
+
+    const data=req.body
+    try {
+        let saveData = {
+            status: "approved",
+            accepted_at: Date()
+        }
+        
+        const result= await Proposal.findOne({_id: data.proposal_id}).then(doc =>{
+           // console.log(doc)
+           
+            doc.todo=[];
+            doc.line_items.map((value,index) =>{
+                if(value.status=='approved'){
+                    doc.todo.push({
+                        title: value.title,
+                        description: value.description,
+                        budget: value.budget,
+                        status:  ""  
+                    })
+                    
+                }
+            })
+
+            doc.status="approved";
+            doc.save();
+            return doc;
+        })
+
+        result.is_update=true;
+        await update_message(data.proposal_id,{line_items: result.line_items})
+
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+
+        const service= await Service.findOne({_id: result.service}) 
+
+         console.log(service);
+         // emit
+        saveData={
+            total_paid: result.budget,
+            final_approved_price: result.budget,
+            final_approved_proposal: data.proposal_id,
+            final_approved_service: service._id,
+            final_approved_user: service.user_id,
+            assigned: true,
+            assigned_at: Date()
+
+        }
+        const project= await Project.findOneAndUpdate({_id: result.project}, saveData) 
+
+
+        return res.send({
+            data: result,
+            status: true,
+            error:{}
+        });
+    } catch (err) {
+        console.log("I am error");
+        console.log(err.message);
+        next({statusCode: 400, error: err.message});
+        return
+    }
+
+}
+
+module.exports={add,add_review,update,add_new_line_items,change_line_item_status,index,raise_dispute,accept_proposal,pay}

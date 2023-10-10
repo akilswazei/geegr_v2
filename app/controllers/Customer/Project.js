@@ -1,5 +1,6 @@
 const Project = require("./../../../models/Project_model");
 const User = require("./../../../models/User_model");
+const Media = require("./../../../models/Media_model");
 const Category = require("./../../../models/ServiceCategory_model");
 
 const helper = require("./../../../helper/helper");
@@ -93,7 +94,16 @@ async function details(req,res,next){
     const data=req.body
     try {
 
-        let project = await Project.findOne({_id: data.project_id,created_by: data.user._id});
+        let project = await Project.findOne({_id: data.project_id,created_by: data.user._id}).populate({
+            path: "images",
+          }).then(doc =>{
+                doc.images?.map((value,key) =>{
+                    value.file=process.env.root_url+'/uploads/'+value.file;
+                    return value
+                })
+                return doc;
+          });
+
         const category=await Category.findOne({_id: project.category })
         const sub_category=await Category.findOne({_id: project.sub_category })
   
@@ -126,33 +136,36 @@ async function update(req,res,next){
     try {
         let project = await Project.findOne({_id: data.project_id});
         project = project.toObject();
-        let newimages=[];
-        if(project.images && project.images.length==0){
-            project.images=[];
+        let requested_images=[];
+
+        if(data.image_ids && data.image_ids!=''){
+            requested_images=data.image_ids.split(',');
         }
 
-        if(data['removeimages'] && data['removeimages'].length!=0){
-            data['removeimages'].map(function(img,index){
-                console.log("delete")
-                let deleteindex=project.images.indexOf(img.trim());
-                console.log(deleteindex)
-                if(deleteindex > -1){
-                    console.log("deleted")
-                    
-                    project.images.splice(deleteindex, 1)
-                }
-            })
-        }
-        if(data['newimages'] && data['newimages'].length!=0){
-            newimages=data['newimages'].map(function(img,index){
-                return fileupload(img,"project-")
-            })
-           
-        }
-         accepted_inputs.images=project.images.concat(newimages)
-         accepted_inputs.updated_at=Date()
+        //delete old images
+        // let current_images = project.images?.map(a => a._id)
+        // var intersection = await current_images.filter(function(n) {
+        //     console.log(requested_images.indexOf(n),'index')
+        //     return requested_images.indexOf(n),'index' == -1;
+        // });
 
-        const result = await Project.findOneAndUpdate({_id: data.project_id}, accepted_inputs);
+
+        if(req?.files?.images){
+            if(Array.isArray(req.files.images)){
+                await Promise.all( req.files.images.map(async (value,key)=>{
+                    console.log(value,key)
+                    req.files.uploadFile=req.files.images[key];
+                    requested_images.push((await customupload(req.files)))
+                }))
+            } else{
+                req.files.uploadFile=req.files.images;
+                requested_images.push((await customupload(req.files)))
+            }
+
+        }
+
+        accepted_inputs.images=requested_images; 
+        const result = await Project.findOneAndUpdate({_id: data.project_id}, accepted_inputs,{new: true});
 
         return res.send({
             data: result,
@@ -180,7 +193,37 @@ async function remove(req,res,next){
         next({statusCode: 400, error: err.message});
     }
 }
+let customupload= async function (req) {
+  
+  console.log(req)
 
+  // When a file has been uploaded
+  if (req && Object.keys(req).length !== 0) {
+        
+    // Uploaded path
+    const uploadedFile = req.uploadFile;
+  
+    // Logging uploading file
+    console.log(uploadedFile,'jony');
+  
+    let now=new Date().toString();
+    // Upload path
+    const uploadPath = '/home/geegr_v2'
+        + "/uploads/" +now+uploadedFile.name;
+  
+    // To save the file using mv() function
+    try{
+        await uploadedFile.mv(uploadPath);
+        let saveImage = new Media({file: now+uploadedFile.name});
+        saveImage.save();
+        return saveImage._id
+    } catch(e){
+        return false
+    }
+
+
+  } else return false
+}
 async function add(req,res,next){
     const data= req.body;
 
@@ -190,15 +233,28 @@ async function add(req,res,next){
     accepted_inputs.created_by= data.user._id
    
     try {
-        
-        if(data['images'].length!=0){
-            accepted_inputs.images=data['images'].map(function(img,index){
-                return fileupload(img,"project-")
-            })
+
+        let letimageresult=[];
+            
+        if(req?.files?.images){
+
+            if(Array.isArray(req.files.images)){
+                await Promise.all( req.files.images.map(async (value,key)=>{
+                    console.log(value,key)
+                    req.files.uploadFile=req.files.images[key];
+                    letimageresult[key]=await customupload(req.files)
+                }))
+            } else{
+                req.files.uploadFile=req.files.images;
+                letimageresult[0]=await customupload(req.files)
+            }
+            console.log(letimageresult,'letimageresult')
+           
         }
 
+        accepted_inputs.images=letimageresult;    
         let saveData = new Project(accepted_inputs);
-        const result = await saveData.save();    
+        const result = await saveData.save();
         return res.send({
             data: result,
             status: true,

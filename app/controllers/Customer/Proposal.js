@@ -159,42 +159,42 @@ async function pay(req,res,next){
             return amount
 
         });
-        let tdata;      
-        switch(data.reqest_for){
-            case 'accept_project':
-                tData = new Transaction({
-                  type: "project_deposit",
-                  description: "Add Amount for proposal",
-                  transacton_type:  'credit',
-                  ref:  data.proposal_id,
-                  transaction_in:  'proposal',
-                  user_id: data.user._id,
-                  amount: amount
-                });
-            break;
-            case 'add_line_items':
-                tData = new Transaction({
-                  type: "new_line_item_deposit",
-                  description: "Add Amount for new line items",
-                  transacton_type:  'credit',
-                  transaction_in:  'proposal',
-                  ref:  data.proposal_id,
-                  user_id: data.user._id,
-                  amount: amount
-                });
-            break;
-            default:
-            break;
-        }
-        await tData.save();  
+        // let tdata;      
+        // switch(data.reqest_for){
+        //     case 'accept_project':
+        //         tData = new Transaction({
+        //           type: "project_deposit",
+        //           description: "Add Amount for proposal",
+        //           transacton_type:  'credit',
+        //           ref:  data.proposal_id,
+        //           transaction_in:  'proposal',
+        //           user_id: data.user._id,
+        //           amount: amount
+        //         });
+        //     break;
+        //     case 'add_line_items':
+        //         tData = new Transaction({
+        //           type: "new_line_item_deposit",
+        //           description: "Add Amount for new line items",
+        //           transacton_type:  'credit',
+        //           transaction_in:  'proposal',
+        //           ref:  data.proposal_id,
+        //           user_id: data.user._id,
+        //           amount: amount
+        //         });
+        //     break;
+        //     default:
+        //     break;
+        // }
+        // await tData.save();  
 
-        await stripe.charges.create({
-            amount: amount*100, // amount in cents, again
-            currency: "usd",
-            source: data.payment_method,
-            description: "payinguser@example.com",
-            customer: "cus_NA3KWTXeJgslum"
-        })
+        // await stripe.charges.create({
+        //     amount: 2*100, // amount in cents, again
+        //     currency: "usd",
+        //     source: data.payment_method,
+        //     description: "payinguser@example.com",
+        //     customer: "cus_NA3KWTXeJgslum"
+        // })
        
         return res.send({
             data: data,
@@ -372,12 +372,10 @@ async function change_line_item_status(req,res,next){
 }
 async function accept_proposal(req,res,next){
 
-
-
     const data=req.body
     try {
         let saveData = {
-            status: "approved",
+            status: "customer_accept",
             accepted_at: Date()
         }
         
@@ -402,26 +400,26 @@ async function accept_proposal(req,res,next){
                     return value;  
                 })
             }
-            doc.todo=[];
-            doc.line_items.map((value,index) =>{
-                if(value.status=='approved'){
-                    doc.todo.push({
-                        title: value.title,
-                        description: value.description,
-                        budget: value.budget,
-                        status:  ""  
-                    })
+            // doc.todo=[];
+            // doc.line_items.map((value,index) =>{
+            //     if(value.status=='approved'){
+            //         doc.todo.push({
+            //             title: value.title,
+            //             description: value.description,
+            //             budget: value.budget,
+            //             status:  ""  
+            //         })
                     
-                }
-            })
+            //     }
+            // })
 
-            doc.status="approved";
+            doc.status="customer_accept";
             doc.save();
             return doc;
         })
 
-        result.is_update=true;
-        await update_message(data.proposal_id,{line_items: result.line_items})
+        //result.is_update=true;
+        //await update_message(data.proposal_id,{line_items: result.line_items})
 
         return res.send({
             data: result,

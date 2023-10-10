@@ -16,7 +16,7 @@ const schema = new mongoose.Schema({
         enum : ['proposal','message','file','add_line_items','release_payment','project_complete','proposal_update','system']
     },
   data:   { 
-    file: { type: String,default:""},
+    file: [{ type: mongoose.Schema.Types.ObjectId, ref: "media"}],
     budget: { type: Number,default:0}, 
     description: { type: String,default:""},
     status: { type: String,default:""},

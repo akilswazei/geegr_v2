@@ -31,7 +31,7 @@ const schema = new mongoose.Schema({
   max_radius: { type: Number, required: true },
   is_shareable: { type: Boolean, required: true },
   is_immediate: { type: Boolean, required: true },
-  images: [{ type: String}],
+  images: [{ type: mongoose.Schema.Types.ObjectId, ref: "media"}],
 
   latlong: { 
     lat:{type: String, required: true },
