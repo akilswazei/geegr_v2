@@ -21,10 +21,19 @@ exports.accepted_inputs =(accepted_input,data) =>{
 
 exports.send_message =async (proposal_id,type,from,message,data) =>{
       try{
-
         const chat=new Chat({ proposal_id: proposal_id,message: message,type: type,from: from, data: {...data,proposal_id:proposal_id} }) 
-       console.log(chat,'aaitem');
-        const result = await chat.save() 
+        const result = await chat.save().then(chat => chat.populate("data.file")).then(chat =>{
+                            chat=chat.toObject();
+                            if(chat?.data?.file && chat.data.file.length!=0){
+                                chat.data.file.map(async (ffile,gkey)=>{
+                                    ffile.file=process.env.root_url+'/uploads/'+ffile.file
+                                    return ffile
+                                })
+                                console.log("run before");
+                                
+                            }    
+                return chat  
+          });
         io.emit(proposal_id, result);
         return {status: true, message: result}
       } catch(err){

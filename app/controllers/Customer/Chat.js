@@ -54,7 +54,23 @@ async function messagelistbyId(req,res,next){
             propo.transaction=(await Transaction.find({ref: propo._id,transaction_in:'proposal' }))
             propo.service.vendor=await User.findOne({_id: propo.service.created_by })
             
-            propo.messagelist=await Chat.find({proposal_id: propo._id })
+            propo.messagelist=await Chat.find({proposal_id: propo._id }).populate({path: "data.file"}).then(doc =>{
+                doc=doc.map((message,key) =>{
+                            message=message.toObject();
+                            if(message?.data?.file && message.data.file.length!=0){
+                                message.data.file.map(async (ffile,gkey)=>{
+                                    ffile.file=process.env.root_url+'/uploads/'+ffile.file
+                                    return ffile
+                                })
+                                console.log("run before");
+                                
+                            }    
+                         return message
+                    })
+                 return doc   
+          });
+
+
             return propo
         })
         return res.send({
