@@ -20,11 +20,18 @@ async function index(req,res,next){
             
             const data={token: token}
 
-            const resultWallet = await Wallet.findOne({user_id: result._id});      
+            let resultWallet = await Wallet.findOne({ user_id: result._id });
+
+            // Check if resultWallet is empty or not found
+            if (!resultWallet) {
+              resultWallet = {}; // Set it to an empty object or any default value
+            } else if (resultWallet instanceof mongoose.Document) {
+              resultWallet = resultWallet.toObject();
+            }
 
             result = result.toObject();
 
-            result.wallet = resultWallet.toObject();
+            result.wallet = resultWallet;
             
             data.user=result;
             
