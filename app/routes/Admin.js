@@ -1,14 +1,13 @@
 const express = require("express")
 const service = require('./../controllers/admin/ServiceCategory');
+const employee = require('./../controllers/admin/Employee');
 
-vendot_router = express.Router()
+admin_router = express.Router()
 
 
-vendot_router.post('/service-category/add', service.add);
-vendot_router.post('/service-category/update', service.update);
-//vendot_router.get('/service/details', service.details);
-
-// vendot_router.get('/projects', project.index);
-// vendot_router.get('/project/details', project.details);
-
-module.exports=vendot_router
+//admin_router.post('/service-category/add', service.add);
+//admin_router.post('/service-category/update', service.update);
+admin_router.post('/employee_list', employee.index);
+admin_router.post('/employee/add', employee.add);
+admin_router.post('/employee/delete', employee.remove);
+module.exports=admin_router

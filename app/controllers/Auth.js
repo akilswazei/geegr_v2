@@ -3,6 +3,8 @@ const User = require("./../../models/User_model");
 const bcrypt = require("bcryptjs");
 // const {insert_user} = require("./../../functions/core")
 
+const Wallet = require("./../../models/Wallet_model");
+
 async function index(req,res,next){
 
 
@@ -17,7 +19,16 @@ async function index(req,res,next){
             var token = await jwt.sign({ user: result  }, 'shhhhh');
             
             const data={token: token}
+
+            const resultWallet = await Wallet.findOne({user_id: result._id});      
+
+            result = result.toObject();
+
+            result.wallet = resultWallet.toObject();
+            
             data.user=result;
+            
+
             return res.send({
               data: data,
               status: true,
@@ -56,6 +67,9 @@ async function changePassword(req,res,next){
 
 async function signup(req,res,next){
 
+    // Example usage
+    const walletId = generateUniqueNumber();
+        
     try{
         let saveData = new User({
           first_name: req.body.first_name,
@@ -63,8 +77,18 @@ async function signup(req,res,next){
           password: await bcrypt.hash(req.body.password, 10),
           type: req.body.type
         });
-
         const result = await saveData.save();
+
+        /* Add initial entry in wallet start */
+        let saveWalletData = new Wallet({
+          user_id: result._id,
+          description: "Initial Balance",
+          balance: 0,
+          wallet_id: walletId
+        });
+        const resultWallet = await saveWalletData.save();
+        /* Add initial entry in wallet end */
+
         return res.send({
           data: result,
           status: true,
@@ -73,8 +97,24 @@ async function signup(req,res,next){
     } catch(err){
         next({statusCode: 401, error: err.message}); 
     }
-
+    
 }
+
+function generateUniqueNumber() {
+  // Get the current timestamp
+  const timestamp = Date.now();
+
+  // Generate a random number between 10000 and 99999
+  const random = Math.floor(Math.random() * 90000) + 10000;
+
+  // Combine timestamp and random number to create a 10-digit unique number
+  const uniqueNumber = `${timestamp}${random}`.slice(0, 10);
+
+  return uniqueNumber;
+}
+
+
+
 
 
 module.exports={index,signup,changePassword}

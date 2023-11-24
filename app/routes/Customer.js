@@ -6,7 +6,9 @@ const Profile = require('./../controllers/Customer/Profile');
 const Chat = require('./../controllers/Customer/Chat');
 const Home = require('./../controllers/front/Home');
 const validation = require("./../../helper/validation/validation")
-const dashboard = require("./../controllers/Customer/Dashboard")
+const dashboard = require("./../controllers/Customer/Dashboard");
+
+const Wallet = require("./../controllers/wallet/Wallet");
 
 customer_router = express.Router()
 
@@ -86,9 +88,9 @@ customer_router.post('/proposal/pay', Proposal.pay);
 customer_router.post('/proposal/create_source', Proposal.create_source);
 customer_router.post('/proposal/get_user_profile', Proposal.get_user_profile);
 customer_router.post('/proposal', Proposal.index);
-//vendot_router.get('/service/details', service.details);
 
-// vendot_router.get('/projects', project.index);
-// vendot_router.get('/project/details', project.details);
+
+customer_router.post('/wallet/balance', Wallet.index);
+customer_router.post('/wallet/add', Wallet.add);
 
 module.exports=customer_router
