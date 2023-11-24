@@ -74,8 +74,8 @@ async function changePassword(req,res,next){
 
 async function signup(req,res,next){
 
-    // Example usage
-    const walletId = generateUniqueNumber();
+    // Example usage    
+    const walletId = await generateUniqueNumber();
         
     try{
         let saveData = new User({
@@ -107,7 +107,7 @@ async function signup(req,res,next){
     
 }
 
-function generateUniqueNumber() {
+async function generateUniqueNumber() {
   // Get the current timestamp
   const timestamp = Date.now();
 
@@ -117,10 +117,16 @@ function generateUniqueNumber() {
   // Combine timestamp and random number to create a 10-digit unique number
   const uniqueNumber = `${timestamp}${random}`.slice(0, 10);
 
-  return uniqueNumber;
+  let resultWallet = await Wallet.findOne({ wallet_id: uniqueNumber });
+
+  // Check if resultWallet is empty or not found
+  if (!resultWallet) {
+    return uniqueNumber;
+  } else {
+    // Return the result of the recursive call
+    return generateUniqueNumber();
+  }
 }
-
-
 
 
 
