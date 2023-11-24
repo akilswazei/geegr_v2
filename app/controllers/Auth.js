@@ -25,7 +25,7 @@ async function index(req,res,next){
             // Check if resultWallet is empty or not found
             if (!resultWallet) {
               resultWallet = {}; // Set it to an empty object or any default value
-            } else if (resultWallet instanceof mongoose.Document) {
+            } else  {
               resultWallet = resultWallet.toObject();
             }
 
