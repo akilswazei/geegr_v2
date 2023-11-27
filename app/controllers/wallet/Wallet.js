@@ -36,11 +36,16 @@ async function add(req,res,next){
 
     console.log("Wallet Id" + walletId);
 
+
+    const initialBalance = data.balance;
+    const mini_trans_amt_per = process.env.MIN_TRANS_AMOUNT_PERCENT;
+    let minimum_percent_amount = percentage(initialBalance, mini_trans_amt_per);
+
     try{
 
         const result = await Wallet.findOneAndUpdate(
            { user_id: decoded.user._id },
-           { user_id: decoded.user._id, description: data.description, balance: data.balance, wallet_id: walletId },
+           { user_id: decoded.user._id, description: data.description, balance: initialBalance, minimum_transaction_balance: minimum_percent_amount, wallet_id: walletId },
            { new: true, upsert: true } // Add upsert: true to insert if not found
         );
         return res.send({
@@ -54,6 +59,10 @@ async function add(req,res,next){
     }
 
 
+}
+
+function percentage(partialValue, totalValue) {
+   return (totalValue * partialValue) / 100;
 }
 
 async function transaction(req,res,next){
