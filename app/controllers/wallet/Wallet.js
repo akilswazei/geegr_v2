@@ -1,5 +1,7 @@
 const jwt=require('jsonwebtoken')
 const Wallet = require("./../../../models/Wallet_model");
+
+const Transaction = require("./../../../models/Transaction_model");
 // const {insert_user} = require("./../../functions/core")
 
 async function index(req,res,next){
@@ -8,9 +10,31 @@ async function index(req,res,next){
     let data=req.body;
 
     try{
-        const result = await Wallet.findOneAndUpdate({user_id: data.user._id},{new: true});
+         const result = await Wallet.findOneAndUpdate({user_id: data.user._id},{new: true});
+        
+        let resultTrans = await Transaction.find({ user_id: data.user._id, type: "new_line_item_deposit", amount: { $exists: true } });
+
+        // Check if resultTrans is empty or not found
+        let resultTransObj;
+        if (!resultTrans) {
+            resultTransObj = {}; // Set it to an empty object or any default value
+        } else {
+            resultTransObj = resultTrans.map(trans => trans.toObject());
+        }
+
+        let updatedResult;
+
+        if (result) {
+            updatedResult = result.toObject();
+        } else {
+            // Handle the case when no document is found, e.g., set updatedResult to an empty object
+            updatedResult = {};
+        }
+
+        updatedResult.wallet_transaction = resultTransObj;
+
         return res.send({
-            data: result,
+            data: updatedResult,
             status: true,
             error:{}
         });
