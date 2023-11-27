@@ -9,6 +9,7 @@ const schema = new mongoose.Schema({
   wallet_id: { type: String, required: true, maxlength: max_length.medium },
   description: { type: String, maxlength: max_length.long },    
   balance: { type: String, required: true, maxlength: max_length.short },
+  minimum_transaction_balance: { type: String, required: true, maxlength: max_length.short },
   user_id: { type: String },
   created_at: { type: Date, default: Date.now },  
   updated_at: { type: Date },

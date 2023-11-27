@@ -74,6 +74,12 @@ async function changePassword(req,res,next){
 
 async function signup(req,res,next){
 
+    
+    const initialBalance = 100;
+    const mini_trans_amt_per = process.env.MIN_TRANS_AMOUNT_PERCENT;
+    let minimum_percent_amount = percentage(initialBalance, mini_trans_amt_per);
+    
+
     // Example usage    
     const walletId = await generateUniqueNumber();
         
@@ -90,7 +96,8 @@ async function signup(req,res,next){
         let saveWalletData = new Wallet({
           user_id: result._id,
           description: "Initial Balance",
-          balance: 0,
+          balance: initialBalance,
+          minimum_transaction_balance: minimum_percent_amount,
           wallet_id: walletId
         });
         const resultWallet = await saveWalletData.save();
@@ -106,6 +113,10 @@ async function signup(req,res,next){
     }
     
 }
+
+function percentage(partialValue, totalValue) {
+   return (totalValue * partialValue) / 100;
+} 
 
 async function generateUniqueNumber() {
   // Get the current timestamp
