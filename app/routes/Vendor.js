@@ -10,6 +10,9 @@ const upload = multer({dest: 'uploads/'});
 const Profile = require('./../controllers/vendor/Profile');
 const dashboard = require("./../controllers/vendor/Dashboard")
 
+const Wallet = require("./../controllers/wallet/Wallet");
+const Notification = require("./../controllers/notification/Notification");
+
 vendor_router = express.Router()
 
 
@@ -86,5 +89,10 @@ vendor_router.post('/proposal/raise_dispute', proposal.raise_dispute);
 
 // vendor_router.get('/projects', project.index);
 // vendor_router.get('/project/details', project.details);
+
+vendor_router.post('/wallet/balance', Wallet.index);
+vendor_router.post('/wallet/add', Wallet.add);
+
+vendor_router.post('/notification/list', Notification.index);
 
 module.exports=vendor_router
