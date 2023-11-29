@@ -9,6 +9,7 @@ const validation = require("./../../helper/validation/validation")
 const dashboard = require("./../controllers/Customer/Dashboard");
 
 const Wallet = require("./../controllers/wallet/Wallet");
+const Notification = require("./../controllers/notification/Notification");
 
 customer_router = express.Router()
 
@@ -92,5 +93,7 @@ customer_router.post('/proposal', Proposal.index);
 
 customer_router.post('/wallet/balance', Wallet.index);
 customer_router.post('/wallet/add', Wallet.add);
+
+customer_router.post('/notification/list', Notification.index);
 
 module.exports=customer_router
