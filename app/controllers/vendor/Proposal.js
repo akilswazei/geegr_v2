@@ -28,6 +28,7 @@ async function index(req,res,next){
 async function add(req,res,next){
 
     const data=req.body
+    
     try {
 
         let letimageresult=[];
@@ -47,7 +48,28 @@ async function add(req,res,next){
             console.log(letimageresult,'letimageresult')
            
         }
-        console.log(data,'lineitems')
+        console.log("************")
+        console.log(data.line_items,'lineitems')
+
+        let lineItemsArray;
+
+        if (typeof data.line_items === 'string') {
+            // If data.line_items is a string, parse it as JSON
+            try {
+                lineItemsArray = JSON.parse(data.line_items);
+            } catch (error) {
+                console.error('Error parsing JSON for line_items:', error);
+                // Handle the error as needed, maybe setting lineItemsArray to an empty array
+                lineItemsArray = [];
+            }
+        } else if (Array.isArray(data.line_items)) {
+            // If data.line_items is already an array, use it directly
+            lineItemsArray = data.line_items;
+        } else {
+            // Handle other cases if necessary, e.g., setting lineItemsArray to an empty array
+            lineItemsArray = [];
+        }
+
 
         let saveData = new Proposal({
           project: data.project_id,
@@ -55,7 +77,7 @@ async function add(req,res,next){
           budget: data.budget,
           description: data.description,
           created_by: data.user._id,
-          line_items: JSON.parse(data.line_items),
+          line_items: lineItemsArray,
           images: letimageresult
         });
         let result = await saveData.save();
