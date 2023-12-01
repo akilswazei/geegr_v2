@@ -396,7 +396,7 @@ async function accept_proposal(req,res,next){
                 }             
             } else{
                 doc.line_items=doc.line_items.map((value,index)=>{
-                    value.status='approved';
+                    value.status='  ';
                     return value;  
                 })
             }
