@@ -4,6 +4,14 @@ const Wallet = require("./../../../models/Wallet_model");
 const Transaction = require("./../../../models/Transaction_model");
 // const {insert_user} = require("./../../functions/core")
 
+
+
+
+async function dashboard(req,res,next){
+    console.log("Wallet dashboard ");
+    let data=req.body;
+}
+
 async function index(req,res,next){
    
     console.log("Wallet index method called");
@@ -146,4 +154,4 @@ async function generateUniqueNumber() {
 
 
 
-module.exports={index,add,transaction}
+module.exports={index,add,transaction,dashboard}

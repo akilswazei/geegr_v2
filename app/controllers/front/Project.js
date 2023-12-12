@@ -7,6 +7,8 @@ const {fileupload}= require("./../../../helper/fileupload");
 // const {insert_user} = require("./../../functions/core")
 
 async function index(req,res,next){
+    console.log("Project Req : " + req.body);
+
     const result = await Project.find({});
     return res.send({
         data: result,
