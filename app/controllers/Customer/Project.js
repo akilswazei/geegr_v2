@@ -221,7 +221,9 @@ let customupload= async function (req) {
 
     console.log(now,'fileunique name time');    
 
-    const uploadPath = '/xampp/htdocs/geegr_v2/uploads/'+now+uploadedFile.name;
+    //const uploadPath = '/xampp/htdocs/geegr_v2/uploads/'+now+uploadedFile.name;
+
+    const uploadPath = '/home/geegr_v2/uploads/' +now+uploadedFile.name;
   
     // To save the file using mv() function
     try{
