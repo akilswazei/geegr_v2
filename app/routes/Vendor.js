@@ -92,6 +92,7 @@ vendor_router.post('/proposal/raise_dispute', proposal.raise_dispute);
 
 vendor_router.post('/wallet/balance', Wallet.index);
 vendor_router.post('/wallet/add', Wallet.add);
+vendor_router.post('/wallet', Wallet.dashboard);
 
 vendor_router.post('/notification/list', Notification.index);
 

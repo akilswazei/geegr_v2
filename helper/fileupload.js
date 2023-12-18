@@ -23,7 +23,7 @@ function getFileExtension(filename){
 }
 let customupload= async function (req) {
   
-  console.log(req)
+  console.log(Object.keys(req).length)
 
   // When a file has been uploaded
   if (req && Object.keys(req).length !== 0) {
@@ -36,16 +36,19 @@ let customupload= async function (req) {
   
     let now=new Date().toString();
     // Upload path
-    const uploadPath = '/home/geegr_v2'
-        + "/uploads/" +now+uploadedFile.name;
+    ///const uploadPath = '/home/geegr_v2'+ "/uploads/" +now+uploadedFile.name;
+
+    const uploadPath = "geegr_v2/uploads/" +now+uploadedFile.name;        
   
     // To save the file using mv() function
     try{
         await uploadedFile.mv(uploadPath);
+        console.log("Uploading files");
         let saveImage = new Media({file: now+uploadedFile.name});
         saveImage.save();
         return saveImage._id
     } catch(e){
+        console.log(e)
         return false
     }
 

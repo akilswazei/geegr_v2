@@ -193,9 +193,17 @@ async function remove(req,res,next){
         next({statusCode: 400, error: err.message});
     }
 }
+
+let getRandomFileName = async function () {
+    var timestamp = new Date().toISOString().replace(/[-:.]/g,"");  
+    var random = ("" + Math.random()).substring(2, 8); 
+    var random_number = timestamp+random;  
+    return random_number;
+}
+
 let customupload= async function (req) {
   
-  console.log(req)
+  console.log(Object.keys(req).length)
 
   // When a file has been uploaded
   if (req && Object.keys(req).length !== 0) {
@@ -204,20 +212,31 @@ let customupload= async function (req) {
     const uploadedFile = req.uploadFile;
   
     // Logging uploading file
-    console.log(uploadedFile,'jony');
+   // console.log(uploadedFile,'jony');
   
-    let now=new Date().toString();
+   
+
+    let now = await getRandomFileName();
     // Upload path
-    const uploadPath = '/home/geegr_v2'
-        + "/uploads/" +now+uploadedFile.name;
+
+    console.log(now,'fileunique name time');    
+
+    //const uploadPath = '/xampp/htdocs/geegr_v2/uploads/'+now+uploadedFile.name;
+
+    const uploadPath = '/home/geegr_v2/uploads/' +now+uploadedFile.name;
   
     // To save the file using mv() function
     try{
+        console.log("Upload Files");
         await uploadedFile.mv(uploadPath);
         let saveImage = new Media({file: now+uploadedFile.name});
         saveImage.save();
+
+        console.log("File Id " + saveImage._id);
         return saveImage._id
     } catch(e){
+
+         console.log("File Id Error" + e );
         return false
     }
 
@@ -231,6 +250,8 @@ async function add(req,res,next){
     const accepted_inputs=helper.accepted_inputs(["title","description","budget","street_name","unit","city","state","zipcode","max_radius","is_shareable","is_immediate","location","latlong","category","sub_category"],data)
     
     accepted_inputs.created_by= data.user._id
+
+
    
     try {
 
@@ -240,7 +261,7 @@ async function add(req,res,next){
 
             if(Array.isArray(req.files.images)){
                 await Promise.all( req.files.images.map(async (value,key)=>{
-                    console.log(value,key)
+                   // console.log(value,key)
                     req.files.uploadFile=req.files.images[key];
                     letimageresult[key]=await customupload(req.files)
                 }))
@@ -248,11 +269,14 @@ async function add(req,res,next){
                 req.files.uploadFile=req.files.images;
                 letimageresult[0]=await customupload(req.files)
             }
-            console.log(letimageresult,'letimageresult')
+            //console.log(letimageresult,'letimageresult')
            
         }
 
-        accepted_inputs.images=letimageresult;    
+        accepted_inputs.images=letimageresult;  
+
+        console.log(accepted_inputs);
+
         let saveData = new Project(accepted_inputs);
         const result = await saveData.save();
         return res.send({

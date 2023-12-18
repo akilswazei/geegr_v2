@@ -8,8 +8,43 @@ const Category = require("./../../../models/ServiceCategory_model");
 
 async function index(req,res,next){
 
+    const data=req.body;
+
+   // const searchData = data.s; // Assuming the search string is in req.body.data
+    const searchData = data && data.s ? data.s : "";
+    const locationData = data && data.location ? data.location : "";
+
+    console.log("Fetching Service API Listing Line 16");
+    console.log(req.body);
+
+    console.log("Fetching Service API Listing Line 19");
+
     try{
-        let services = await Service.find({approval_status: "approved"});
+        
+        //let services = await Service.find({approval_status: "approved"});
+
+        let services;
+
+        if (searchData.trim() !== "" || locationData.trim() !== "") {
+            // If there's a search string or location, include them in the query
+            const searchCriteria = {
+                approval_status: "approved",
+            };
+
+            if (searchData.trim() !== "") {
+                searchCriteria.title = { $regex: new RegExp(searchData, "i") };
+            }
+
+            if (locationData.trim() !== "") {
+                searchCriteria.location = { $regex: new RegExp(locationData, "i") };
+            }
+
+            services = await Service.find(searchCriteria);
+        } else {
+            // If no search string or location, fetch all approved services
+            services = await Service.find({ approval_status: "approved" });
+        }
+
         services = await Promise.all( services.map(async function(service, index){
 
             service = service.toObject();

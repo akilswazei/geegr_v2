@@ -7,7 +7,8 @@ const {fileupload}= require("./../../../helper/fileupload");
 // const {insert_user} = require("./../../functions/core")
 
 async function index(req,res,next){
-    const result = await Project.find({});
+    console.log("Project Req : " + req.body);
+    const result = await Project.find({}).populate('images');
     return res.send({
         data: result,
         status: true,
