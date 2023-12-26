@@ -105,11 +105,11 @@ async function details(req,res,next){
           });
 
         const category=await Category.findOne({_id: project.category })
-        const sub_category=await Category.findOne({_id: project.sub_category })
+        //const sub_category=await Category.findOne({_id: project.sub_category })
   
         project = project.toObject();
         project.category_name=category.title
-        project.sub_category_name=sub_category.title
+        project.sub_category_name=""
 
 
         if(project==null){
@@ -221,9 +221,11 @@ let customupload= async function (req) {
 
     console.log(now,'fileunique name time');    
 
-    //const uploadPath = '/xampp/htdocs/geegr_v2/uploads/'+now+uploadedFile.name;
+    // UNCOMMENT FOR LOCAL CHECK  
+    const uploadPath = '/xampp/htdocs/geegr_v2/uploads/'+now+uploadedFile.name;
 
-    const uploadPath = '/home/geegr_v2/uploads/' +now+uploadedFile.name;
+    // UNCOMMENT FOR LIVE CHECK FOR IP http://170.187.251.211:3000    
+    //const uploadPath = '/home/geegr_v2/uploads/' +now+uploadedFile.name;
   
     // To save the file using mv() function
     try{
@@ -247,7 +249,12 @@ async function add(req,res,next){
     const data= req.body;
 
     data.latlong={lat: data.lat, long: data.long}
-    const accepted_inputs=helper.accepted_inputs(["title","description","budget","street_name","unit","city","state","zipcode","max_radius","is_shareable","is_immediate","location","latlong","category","sub_category"],data)
+
+    data.street_name = " ";
+    data.sub_category = {};
+    data.unit = 0;
+
+    const accepted_inputs=helper.accepted_inputs(["title","description","budget","street_name","unit","city","state","zipcode","max_radius","is_shareable","is_immediate","location","latlong","category"],data)
     
     accepted_inputs.created_by= data.user._id
 

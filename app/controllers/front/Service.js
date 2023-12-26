@@ -10,9 +10,11 @@ async function index(req,res,next){
 
     const data=req.body;
 
-   // const searchData = data.s; // Assuming the search string is in req.body.data
-    const searchData = data && data.s ? data.s : "";
-    const locationData = data && data.location ? data.location : "";
+    // Destructure the data object for cleaner code
+    const { s: searchData = "", location = "", page = 1 } = data;
+
+    const pageSize = 10; // Adjust the page size as needed
+
 
     console.log("Fetching Service API Listing Line 16");
     console.log(req.body);
@@ -24,28 +26,37 @@ async function index(req,res,next){
         //let services = await Service.find({approval_status: "approved"});
 
         let services;
+        // If there's a search string or location, include them in the query
+        const searchCriteria = {
+            approval_status: "approved",
+        };
+        
 
-        if (searchData.trim() !== "" || locationData.trim() !== "") {
-            // If there's a search string or location, include them in the query
-            const searchCriteria = {
-                approval_status: "approved",
-            };
+        if (searchData.trim() !== "" || location.trim() !== "") {
 
             if (searchData.trim() !== "") {
                 searchCriteria.title = { $regex: new RegExp(searchData, "i") };
             }
 
-            if (locationData.trim() !== "") {
-                searchCriteria.location = { $regex: new RegExp(locationData, "i") };
+            if (location.trim() !== "") {
+                searchCriteria.location = { $regex: new RegExp(location, "i") };
             }
 
-            services = await Service.find(searchCriteria);
+            services = await Service.find(searchCriteria)
+                      .skip((page - 1) * pageSize)
+                      .limit(pageSize);
         } else {
             // If no search string or location, fetch all approved services
-            services = await Service.find({ approval_status: "approved" });
+            services = await Service.find({ searchCriteria })
+                       .skip((page - 1) * pageSize)
+                       .limit(pageSize);
         }
 
-        services = await Promise.all( services.map(async function(service, index){
+            // Calculate totalServices and totalPages outside the if-else block
+            const totalServices = await Service.countDocuments(searchCriteria);
+            const totalPages = Math.ceil(totalServices / pageSize);
+
+            services = await Promise.all( services.map(async function(service, index){
 
             service = service.toObject();
 
@@ -66,6 +77,7 @@ async function index(req,res,next){
 
         return res.send({
             data: services,
+            totPages: totalPages,
             status: true,
             error:{}
         });
