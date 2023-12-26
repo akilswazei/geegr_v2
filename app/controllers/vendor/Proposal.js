@@ -10,7 +10,7 @@ async function index(req,res,next){
     const data=req.body
     try {
         if(!data.limit){
-            data.limit=20;
+            data.limit=1;
         }
         const result= await Proposal.find({created_by: data.user._id}).populate('project').populate('service').limit(data.limit)
         return res.send({

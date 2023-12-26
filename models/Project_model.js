@@ -16,15 +16,14 @@ const schema = new mongoose.Schema({
   sub_category: {
     type: mongoose.Schema.Types.ObjectId,
     //required: true,
-    ref: "service_category",
-    required: true
+    ref: "service_category"
   },
   budget: { type: Number},
   location: { type: String, required: true },
 
 
-  street_name: { type: String, required: true },
-  unit: { type: String, required: true },
+  street_name: { type: String},
+  unit: { type: String },
   city: { type: String, required: true },
   state: { type: String, required: true },
   zipcode: { type: String, required: true },
