@@ -11,14 +11,14 @@ async function index(req,res,next){
     const data=req.body;
 
     // Destructure the data object for cleaner code
-    const { s: searchData = "", location = "", page = 1 } = data;
+    
+    let  { s: searchData = "", location = "", page = 1, category = [],orderBy="" } = data;
 
     const pageSize = 10; // Adjust the page size as needed
 
 
     console.log("Fetching Service API Listing Line 16");
     console.log(req.body);
-
     console.log("Fetching Service API Listing Line 19");
 
     try{
@@ -30,9 +30,11 @@ async function index(req,res,next){
         const searchCriteria = {
             approval_status: "approved",
         };
+
+        category_item =await Category.find({})
         
 
-        if (searchData.trim() !== "" || location.trim() !== "") {
+        if (searchData.trim() !== "" || location.trim() !== "" || category.length > 0) {
 
             if (searchData.trim() !== "") {
                 searchCriteria.title = { $regex: new RegExp(searchData, "i") };
@@ -42,12 +44,23 @@ async function index(req,res,next){
                 searchCriteria.location = { $regex: new RegExp(location, "i") };
             }
 
+          
+            if (category.length > 0) {
+                // Convert category names to ObjectIds
+                const categoryIds = await Category.find({ title: { $in: category } }).distinct('_id');
+
+                console.log("Cate IDs"+categoryIds)
+                searchCriteria.category = { $in: categoryIds };
+            }
+
             services = await Service.find(searchCriteria)
+                      .sort(getSortOrder(orderBy))
                       .skip((page - 1) * pageSize)
                       .limit(pageSize);
         } else {
             // If no search string or location, fetch all approved services
             services = await Service.find({ searchCriteria })
+                       .sort(getSortOrder(orderBy))
                        .skip((page - 1) * pageSize)
                        .limit(pageSize);
         }
@@ -61,8 +74,7 @@ async function index(req,res,next){
             service = service.toObject();
 
             // work on search and geo location search
-
-            service.display_image=process.env.root_url+"/uploads/"+service.display_image
+            service.display_image=process.env.root_url+"/uploads/"+service.display_image     
             service.category=await Category.findOne({_id: service.category })
             service.sub_category=await Category.findOne({_id: service.sub_category })
         
@@ -75,8 +87,10 @@ async function index(req,res,next){
             return service;
         }))
 
+
         return res.send({
             data: services,
+            category:category_item,
             totPages: totalPages,
             status: true,
             error:{}
@@ -88,6 +102,22 @@ async function index(req,res,next){
     }
 
 }
+
+function getSortOrder(orderby) {
+    switch (orderby) {
+      case "New":
+        return { created_at: 'desc' };
+      case "Old":
+        return { created_at: 'asc' };
+      case "A to Z":
+        return { title: 'asc' };
+      case "Z to A":
+        return { title: 'desc' };
+      default:
+        return { created_at: 'desc' }; // Default to sorting by date descending
+    }
+}
+
 async function details(req,res,next){
 
     try{
