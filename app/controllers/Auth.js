@@ -140,6 +140,50 @@ async function generateUniqueNumber() {
 }
 
 
+async function signup_google(req,res,next){
 
-module.exports={index,signup,changePassword}
+    
+  const initialBalance = 100;
+  const mini_trans_amt_per = process.env.MIN_TRANS_AMOUNT_PERCENT;
+  let minimum_percent_amount = percentage(initialBalance, mini_trans_amt_per);
+  
+
+  // Example usage    
+  const walletId = await generateUniqueNumber();
+      
+  try{
+      let saveData = new User({
+        first_name: req.body.first_name,
+        email: req.body.email,        
+        password: await bcrypt.hash("1", 10),
+        google_sub: req.body.sub,
+        login_with_google : true,
+        type: req.body.type
+      });
+      const result = await saveData.save();
+
+      /* Add initial entry in wallet start */
+      let saveWalletData = new Wallet({
+        user_id: result._id,
+        description: "Initial Balance",
+        balance: initialBalance,
+        minimum_transaction_balance: minimum_percent_amount,
+        wallet_id: walletId
+      });
+      const resultWallet = await saveWalletData.save();
+      /* Add initial entry in wallet end */
+
+      return res.send({
+        data: result,
+        status: true,
+        error:{}
+      });        
+  } catch(err){
+      next({statusCode: 401, error: err.message}); 
+  }
+  
+}
+
+
+module.exports={index,signup,signup_google,changePassword}
 
