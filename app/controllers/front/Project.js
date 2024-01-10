@@ -96,7 +96,7 @@ function getSortOrder(orderby) {
       default:
         return { created_at: 'desc' }; // Default to sorting by date descending
     }
-  }
+}
 
 async function details(req,res,next){
     const query={};

@@ -93,6 +93,7 @@ app.use(async function (req, res, next) {
 
 app.post('/auth', auth.index);
 app.post('/auth/signup', auth.signup);
+app.post('/auth/signup_google', auth.signup_google);
 //app.use(`/fileupload`,require(`./helper/fileupload.js`));
 
 app.use(`/front`,require(`./app/routes/Front.js`));

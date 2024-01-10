@@ -71,6 +71,8 @@ const schema = new mongoose.Schema({
   //   required: true,
   //   enum: ["admins", "users"], //Possible model names like admins, users for populate
   // },
+  login_with_google: { type: Boolean, default: false },  
+  google_sub: { type: String },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date },
   updated_by: { type: mongoose.Schema.Types.ObjectId },
