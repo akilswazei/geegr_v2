@@ -184,6 +184,42 @@ async function signup_google(req,res,next){
   
 }
 
+async function login_google(req,res,next){
 
-module.exports={index,signup,signup_google,changePassword}
+  result = await User.findOne({ email: req.body.email, deleted: false,login_with_google:true,google_sub: req.body.sub });
+  if(result){
+      
+          var token = await jwt.sign({ user: result  }, 'shhhhh');
+          
+          const data={token: token}
+
+          let resultWallet = await Wallet.findOne({ user_id: result._id });
+
+          // Check if resultWallet is empty or not found
+          if (!resultWallet) {
+            resultWallet = {}; // Set it to an empty object or any default value
+          } else  {
+            resultWallet = resultWallet.toObject();
+          }
+
+          result = result.toObject();
+
+          result.wallet = resultWallet;
+          
+          data.user=result;
+          
+
+          return res.send({
+            data: data,
+            status: true,
+            error:{}
+          });              
+      
+  } else{
+      next({statusCode: 401, error: "email id is not correct"});
+  }
+}
+
+
+module.exports={index,signup,signup_google,login_google,changePassword}
 
