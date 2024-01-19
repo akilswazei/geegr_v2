@@ -25,6 +25,7 @@ async function index(req,res,next){
 async function update(req,res,next){
     let data=req.body;
 
+    console.log(data);
     try{
         var errormessage;
         const profile_image=[]
