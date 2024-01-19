@@ -140,7 +140,7 @@ async function generateUniqueNumber() {
 }
 
 
-async function signup_google(req,res,next){
+async function social_signup(req,res,next){
 
     
   const initialBalance = 100;
@@ -156,8 +156,9 @@ async function signup_google(req,res,next){
         first_name: req.body.first_name,
         email: req.body.email,        
         password: await bcrypt.hash("1", 10),
-        google_sub: req.body.sub,
-        login_with_google : true,
+        social_sub_id: req.body.sub,
+        social_login_type: req.body.social_login_type,
+        is_social_login : true,
         type: req.body.type
       });
       const result = await saveData.save();
@@ -184,9 +185,9 @@ async function signup_google(req,res,next){
   
 }
 
-async function login_google(req,res,next){
+async function social_login(req,res,next){
 
-  result = await User.findOne({ email: req.body.email, deleted: false,login_with_google:true,google_sub: req.body.sub });
+  result = await User.findOne({ email: req.body.email, deleted: false,is_social_login:true,social_sub_id: req.body.sub,social_login_type: req.body.social_login_type });
   if(result){
       
           var token = await jwt.sign({ user: result  }, 'shhhhh');
@@ -216,10 +217,10 @@ async function login_google(req,res,next){
           });              
       
   } else{
-      next({statusCode: 401, error: "email id is not correct"});
+      next({statusCode: 401, error: "You are not registered with this google email"});
   }
 }
 
 
-module.exports={index,signup,signup_google,login_google,changePassword}
+module.exports={index,signup,social_signup,social_login,changePassword}
 
