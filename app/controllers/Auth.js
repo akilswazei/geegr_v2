@@ -150,38 +150,46 @@ async function social_signup(req,res,next){
 
   // Example usage    
   const walletId = await generateUniqueNumber();
+
+  result = await User.findOne({ email: req.body.email, deleted: false,is_social_login:true,social_sub_id: req.body.sub,social_login_type: req.body.social_login_type });
+  if(!result){
       
-  try{
-      let saveData = new User({
-        first_name: req.body.first_name,
-        email: req.body.email,        
-        password: await bcrypt.hash("1", 10),
-        social_sub_id: req.body.sub,
-        social_login_type: req.body.social_login_type,
-        is_social_login : true,
-        type: req.body.type
-      });
-      const result = await saveData.save();
+            try{
+                let saveData = new User({
+                  first_name: req.body.first_name,
+                  email: req.body.email,        
+                  password: await bcrypt.hash("1", 10),
+                  social_sub_id: req.body.sub,
+                  social_login_type: req.body.social_login_type,
+                  is_social_login : true,
+                  type: req.body.type
+                });
+                const result = await saveData.save();
 
-      /* Add initial entry in wallet start */
-      let saveWalletData = new Wallet({
-        user_id: result._id,
-        description: "Initial Balance",
-        balance: initialBalance,
-        minimum_transaction_balance: minimum_percent_amount,
-        wallet_id: walletId
-      });
-      const resultWallet = await saveWalletData.save();
-      /* Add initial entry in wallet end */
+                /* Add initial entry in wallet start */
+                let saveWalletData = new Wallet({
+                  user_id: result._id,
+                  description: "Initial Balance",
+                  balance: initialBalance,
+                  minimum_transaction_balance: minimum_percent_amount,
+                  wallet_id: walletId
+                });
+                const resultWallet = await saveWalletData.save();
+                /* Add initial entry in wallet end */
 
-      return res.send({
-        data: result,
-        status: true,
-        error:{}
-      });        
-  } catch(err){
-      next({statusCode: 401, error: err.message}); 
-  }
+                return res.send({
+                  data: result,
+                  status: true,
+                  error:{}
+                });        
+            } catch(err){
+                next({statusCode: 401, error: err.message}); 
+            }
+}
+else
+{
+    next({statusCode: 401, error: "You are not registered with this social email"});
+}
   
 }
 
