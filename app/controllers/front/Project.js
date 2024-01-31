@@ -11,14 +11,14 @@ async function index(req, res, next) {
 
     // Destructure the data object for cleaner code
     
-    let  { s: searchData = "", location = "", page = 1, category = [],orderBy="" } = data;
+    let  { s: searchData = "", location = "", page = 1, category = [], category_ID = 0, orderBy="" } = data;
 
     const pageSize = 10; // Adjust the page size as needed
 
     console.log("Fetching Service API Listing Line 16");
     console.log(req.body);
 
-    console.log("Page in Query " + page);
+    console.log("Page in Query " + page);    
 
     category_item =await Category.find({})
 
@@ -29,8 +29,8 @@ async function index(req, res, next) {
             approval_status: "approved",
         };
 
-        if (searchData.trim() !== "" || location.trim() !== ""|| category.length > 0 || orderBy.trim()!="") {
-
+        if (searchData.trim() !== "" || location.trim() !== ""|| category.length > 0 || orderBy.trim()!="" || category_ID.trim() != 0) {
+            
             if (searchData.trim() !== "") {
                 searchCriteria.title = { $regex: new RegExp(searchData, "i") };
             }
@@ -45,6 +45,10 @@ async function index(req, res, next) {
 
                 console.log("Cate IDs"+categoryIds)
                 searchCriteria.category = { $in: categoryIds };
+            }
+
+            if (category_ID.trim() != 0) {                
+                searchCriteria.category = { $in: category_ID.trim() };
             }
 
             console.log("DATA"+getSortOrder(orderBy));
