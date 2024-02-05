@@ -11,7 +11,7 @@ async function index(req, res, next) {
 
     // Destructure the data object for cleaner code
     
-    let  { s: searchData = "", location = "", page = 1, category = [], category_ID = 0, orderBy="" } = data;
+    let  { s: searchData = "", location = "", page = 1, category = [], category_ID = "", orderBy="" } = data;
 
     const pageSize = 10; // Adjust the page size as needed
 
