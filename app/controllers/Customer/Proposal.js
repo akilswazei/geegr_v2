@@ -277,6 +277,8 @@ async function update_request(req,res,next){
 
 async function proposal_request(req,res,next){
 
+    console.log("Proposal Request Line 280");
+
     const data=req.body
     try {
         let saveData = new ProposalRequest({

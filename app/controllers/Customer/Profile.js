@@ -59,10 +59,10 @@ async function update(req,res,next){
                 req.files.uploadFile=req.files.images;
                 profile_image.push((await customupload(req.files)))
             }
-
+            inputs.profile_image=profile_image;
         }
 
-        inputs.profile_image=profile_image;
+        
 
         if(errormessage!=undefined){
             throw new Error(error);
