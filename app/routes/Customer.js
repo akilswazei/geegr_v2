@@ -55,6 +55,9 @@ customer_router.post('/profile/update', Profile.update);
 customer_router.post('/profile/changePassword', Profile.changePassword);
 customer_router.post('/profile/address/add', Profile.add_address);
 customer_router.post('/profile/address/update', Profile.update_address);
+
+customer_router.post('/profile/password/update', Profile.changePassword);
+
 customer_router.post('/profile/address/delete', Profile.delete_address);
 customer_router.post('/profile/address', Profile.address_index);
 customer_router.post('/profile/address/detail', Profile.address_detail);

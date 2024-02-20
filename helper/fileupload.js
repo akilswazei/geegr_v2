@@ -38,7 +38,7 @@ let customupload= async function (req) {
     // Upload path
     ///const uploadPath = '/home/geegr_v2'+ "/uploads/" +now+uploadedFile.name;
 
-    const uploadPath = "geegr_v2/uploads/" +now+uploadedFile.name;        
+    const uploadPath = process.env.UPLOAD_IMAGE_PATH+now+uploadedFile.name;        
   
     // To save the file using mv() function
     try{
