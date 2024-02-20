@@ -317,23 +317,63 @@ async function delete_address(req,res,next){
 
 async function changePassword(req,res,next){
 
-    let  data=req.body
-    let newpassword= data.password;
-    try{
+    let data=req.body
+    let old_password= data.old_password;
+    let new_password= data.new_password;
+
+    console.log("****************");
+    console.log(old_password);
+    console.log(new_password);
+    console.log("****************");
+
+    result = await User.findOne({ _id: data.user._id});
+
+    if(result){
+        
+        const isPasswordValid = await bcrypt.compare(
+            old_password,
+            result.password
+          );
+          if(isPasswordValid){
+                console.log("Password matched");
+
+                let saveData ={
+                    password: await bcrypt.hash( new_password, 10),
+                };
+        
+                const result_pass = await User.findOneAndUpdate({_id: data.user._id},saveData);
+                // to send mail
+                return res.send({
+                    data: result_pass,
+                    status: true,
+                    error:{}
+                });
+          }
+          else
+          {
+            next({statusCode: 200, error: "Your old password is not matched."});
+          }
+
+
+        /*
         let saveData ={
-          password: await bcrypt.hash( newpassword, 10),
+            password: await bcrypt.hash( new_password, 10),
         };
-        const result = await User.findOneAndUpdate({_id: data.user._id},saveData);
+  
+        //const result = await User.findOneAndUpdate({_id: data.user._id},saveData);
         // to send mail
         return res.send({
-          data: result,
-          status: true,
-          error:{}
-        }); 
-    }  
-    catch(err){
-        next({statusCode: 401, error: err.message}); 
+            data: result,
+            status: true,
+            error:{}
+        }); */
+        
+    } else{
+        next({statusCode: 401, error: "Your old password is not matched."});
     }
+
+
+
 }
 
 
