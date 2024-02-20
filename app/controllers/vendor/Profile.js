@@ -91,7 +91,7 @@ let customupload= async function (req) {
       console.log(now,'fileunique name time'+uploadedFile);    
   
       // UNCOMMENT FOR LOCAL CHECK  
-      const uploadPath = '/xampp/htdocs/geegr_v2/uploads/'+now+uploadedFile.name;
+      const uploadPath = process.env.UPLOAD_IMAGE_PATH+now+uploadedFile.name;
   
       // UNCOMMENT FOR LIVE CHECK FOR IP http://170.187.251.211:3000    
       //const uploadPath = '/home/geegr_v2/uploads/' +now+uploadedFile.name;
